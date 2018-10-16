@@ -47,10 +47,16 @@ WORKDIR /var/www/html/public
 RUN git submodule update --init --recursive >/dev/null
 
 WORKDIR /var/www/html
-RUN composer update -d public/lib/pkp --no-dev && composer install -d public/plugins/paymentmethod/paypal --no-dev && composer install -d public/plugins/generic/citationStyleLanguage --no-dev
+RUN curl -sS https://getcomposer.org/installer | php
+RUN php composer.phar update -d public/lib/pkp --no-dev \
+    && php composer.phar install -d public/plugins/paymethod/paypal --no-dev \
+    && php composer.phar install -d public/plugins/generic/citationStyleLanguage --no-dev
 WORKDIR /var/www/html/public
-RUN npm install -y && npm run build
+RUN npm install -y \
+    && npm run build
 RUN cp config.TEMPLATE.inc.php config.inc.php
+
+# chmod -R 777 /var/www/html/public/cache
 
 # startup script
 RUN echo "#!/bin/bash\nfind /var/lib/mysql -type f -exec touch {} \;\nservice mysql start\napachectl -DFOREGROUND" >> /root/startup.sh  \
