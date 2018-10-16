@@ -2,7 +2,7 @@ FROM php:7.2.11-stretch
 
 LABEL maintainer="Deutsches Archäologisches Institut: dev@dainst.org"
 LABEL "author"="Dennis Twardy: kontakt@dennistwardy.com"
-LABEL version="0.1"
+LABEL version="0.2"
 LABEL description="DAI specific OJS3 Docker container with DAI specific plugins"
 
 EXPOSE 80 433
