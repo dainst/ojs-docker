@@ -28,10 +28,10 @@ RUN apt-get -y install nodejs
 
 # Setup and run MySQL
 #RUN docker-php-ext-install -j$(nproc) mysql && echo "mysql.default_socket=/run/mysqld/mysqld.sock" >> /usr/local/etc/php/php.ini
-RUN echo "mysql.default_socket=/run/mysqld/mysqld.sock" >> /usr/local/etc/php/php.ini
-RUN mkdir /run/mysqld
-RUN find /var/lib/mysql -type f -exec touch {} \; && service mysql start
-RUN sh -c "echo \"CREATE DATABASE ${MYSQL_DB};\" | mysql" && mysqladmin -u root password ${MYSQL_PASSWORD}
+RUN echo "mysql.default_socket=/var/run/mysqld/mysqld.sock" >> /usr/local/etc/php/php.ini
+RUN find /var/lib/mysql -type f -exec touch {} \; \
+    && service mysql start \
+    && sh -c "echo \"CREATE DATABASE ${MYSQL_DB};\" | mysql" && mysqladmin -u root password ${MYSQL_PASSWORD}
 
 # configure git
 RUN git config --global url.https://.insteadOf git://
@@ -51,3 +51,8 @@ RUN composer update -d public/lib/pkp --no-dev && composer install -d public/plu
 WORKDIR /var/www/html/public
 RUN npm install -y && npm run build
 RUN cp config.TEMPLATE.inc.php config.inc.php
+
+# startup script
+RUN echo "#!/bin/bash\nfind /var/lib/mysql -type f -exec touch {} \;\nservice mysql start\napachectl -DFOREGROUND" >> /root/startup.sh  \
+  && chmod a+x /root/startup.sh
+ENTRYPOINT ["/root/startup.sh"]
