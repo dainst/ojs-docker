@@ -2,11 +2,11 @@ FROM php:7.2.11-apache-stretch
 
 LABEL maintainer="Deutsches Archäologisches Institut: dev@dainst.org"
 LABEL "author"="Dennis Twardy: kontakt@dennistwardy.com"
-LABEL version="0.3"
+LABEL version="0.4"
 LABEL description="DAI specific OJS3 Docker container with DAI specific plugins"
 LABEL "license"="GNU GPL 3"
 
-EXPOSE 80 433
+EXPOSE 80 443
 USER root
 
 ENV ADMIN_USER=admin
@@ -43,30 +43,36 @@ RUN find /var/lib/mysql -type f -exec touch {} \; \
 RUN git config --global url.https://.insteadOf git://
 RUN git config --global advice.detachedHead false
 
-# Set working directory and create files folder
-WORKDIR /var/www/html
-RUN mkdir -p /ojsfiles
+# create files folder
+RUN mkdir -p /var/www/ojsfiles
 
 # Get OJS3 code and prepare it
-RUN git clone --depth 1 --single-branch --branch $OJS_VERSION https://github.com/pkp/ojs.git ojs
-WORKDIR /var/www/html/ojs
+WORKDIR /var/www/html
+RUN git init \
+  && git remote add origin https://github.com/pkp/ojs.git \
+  && git fetch origin \
+  && git checkout --track origin/$OJS_VERSION
 RUN git submodule update --init --recursive >/dev/null
 RUN composer update -d lib/pkp --no-dev \
   && composer install -d plugins/paymethod/paypal --no-dev \
-  & composer install -d plugins/generic/citationStyleLanguage --no-dev
+  && composer install -d plugins/generic/citationStyleLanguage --no-dev
 RUN npm install -y \
   && npm run build
-RUN chmod -R 777 /var/www/html/ojs/cache \
-  && chmod -R 777 /var/www/html/ojs/public
+RUN chmod -R 777 /var/www/html/cache \
+  && chmod -R 777 /var/www/html/public
 RUN cp config.TEMPLATE.inc.php config.inc.php
 
 # Install DAI Plugins
-WORKDIR /var/www/html/ojs/plugins
+WORKDIR /var/www/html/plugins
 RUN git clone https://github.com/dainst/ojs-cilantro-plugin.git generic/ojs-cilantro-plugin
 RUN git clone https://github.com/dainst/ojs-dainst-frontpage-generator-plugin.git generic/ojs-dainst-frontpage-generator-plugin
 RUN git clone https://github.com/dainst/ojs-dainst-zenonlink-plugin.git pubIds/zenon
 RUN git clone https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
 RUN git submodule update --init --recursive
+
+WORKDIR /var/www
+RUN chgrp -f -R www-data html
+RUN chmod -R 775 html
 
 # startup script
 RUN echo "#!/bin/bash\nfind /var/lib/mysql -type f -exec touch {} \;\nservice mysql start\napachectl -DFOREGROUND" >> /root/startup.sh  \
