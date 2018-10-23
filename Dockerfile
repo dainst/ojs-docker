@@ -2,7 +2,7 @@ FROM php:7.2.11-apache-stretch
 
 LABEL maintainer="Deutsches Archäologisches Institut: dev@dainst.org"
 LABEL "author"="Dennis Twardy: kontakt@dennistwardy.com"
-LABEL version="0.4"
+LABEL version="0.5"
 LABEL description="DAI specific OJS3 Docker container with DAI specific plugins"
 LABEL "license"="GNU GPL 3"
 
@@ -27,6 +27,7 @@ ADD php.ini /usr/local/etc/php/
 # Update system and install essentials
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get -y install \
+  acl \
   build-essential \
   curl \
   cron \
@@ -59,10 +60,6 @@ RUN git config --global advice.detachedHead false
 RUN mkdir -p /var/www/ojsfiles
 
 # Get OJS3 code and prepare it
-WORKDIR /var/www
-RUN chgrp -f -R www-data html \
-  && chmod -R 771 html \
-  && chmod g+s html
 WORKDIR /var/www/html
 RUN git init \
   && git remote add origin https://github.com/pkp/ojs.git \
@@ -84,9 +81,16 @@ RUN git clone https://github.com/dainst/ojs-dainst-zenonlink-plugin.git pubIds/z
 RUN git clone https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
 RUN git submodule update --init --recursive
 
-# WORKDIR /var/www/html
-# RUN chmod -R 777 cache \
-#  && chmod -R 777 public
+WORKDIR /var/www
+RUN chgrp -f -R www-data html \
+  && chmod -R 775 html \
+  && chmod g+s html \
+  && setfacl -Rm o::rx,d:o::rx html \
+  && setfacl -Rm g::rwx,d:g::rwx html
+#WORKDIR /var/www
+#RUN chmod -R 771 html \
+#  && chmod -R 777 html/cache \
+#  && chmod -R 777 html/public
 
 # startup script
 RUN echo "#!/bin/bash\nfind /var/lib/mysql -type f -exec touch {} \;\nservice mysql start\napachectl -DFOREGROUND" >> /root/startup.sh  \
