@@ -17,7 +17,7 @@ ENV MYSQL_DB="ojs"
 ENV OJS_VERSION="ojs-stable-3_1_1"
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-WORKDIR ~
+WORKDIR /tmp
 
 # PHP settings
 RUN echo "error_reporting=E_ALL & ~E_WARNING & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED"  >> /usr/local/etc/php/php.ini
@@ -25,12 +25,23 @@ RUN echo "date.timezone = Europe/Berlin"  >> /usr/local/etc/php/php.ini
 
 # Update system and install essentials
 RUN apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade \
-  &&  apt-get -y install git mysql-server nano curl cron supervisor unzip build-essential libssl-dev gnupg
+  && DEBIAN_FRONTEND=noninteractive apt-get -y install \
+  build-essential \
+  curl \
+  cron \
+  git \
+  gnupg \
+  libssl-dev \
+  mysql-server \ 
+  nano \
+  supervisor \
+  unzip \
+  && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+  && apt-get -y install \
+  nodejs
+
 RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
   && php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
-RUN apt-get -y install nodejs
 
 # Setup and run MySQL
 RUN echo "mysql.default_socket=/var/run/mysqld/mysqld.sock" >> /usr/local/etc/php/php.ini
@@ -47,6 +58,10 @@ RUN git config --global advice.detachedHead false
 RUN mkdir -p /var/www/ojsfiles
 
 # Get OJS3 code and prepare it
+WORKDIR /var/www
+RUN chgrp -f -R www-data html \
+  && chmod -R 771 html \
+  && chmod g+s html
 WORKDIR /var/www/html
 RUN git init \
   && git remote add origin https://github.com/pkp/ojs.git \
@@ -58,8 +73,6 @@ RUN composer update -d lib/pkp --no-dev \
   && composer install -d plugins/generic/citationStyleLanguage --no-dev
 RUN npm install -y \
   && npm run build
-RUN chmod -R 777 /var/www/html/cache \
-  && chmod -R 777 /var/www/html/public
 RUN cp config.TEMPLATE.inc.php config.inc.php
 
 # Install DAI Plugins
@@ -70,9 +83,9 @@ RUN git clone https://github.com/dainst/ojs-dainst-zenonlink-plugin.git pubIds/z
 RUN git clone https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
 RUN git submodule update --init --recursive
 
-WORKDIR /var/www
-RUN chgrp -f -R www-data html
-RUN chmod -R 775 html
+# WORKDIR /var/www/html
+# RUN chmod -R 777 cache \
+#  && chmod -R 777 public
 
 # startup script
 RUN echo "#!/bin/bash\nfind /var/lib/mysql -type f -exec touch {} \;\nservice mysql start\napachectl -DFOREGROUND" >> /root/startup.sh  \
