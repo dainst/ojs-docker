@@ -20,8 +20,9 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /tmp
 
 # PHP settings
-RUN echo "error_reporting=E_ALL & ~E_WARNING & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED"  >> /usr/local/etc/php/php.ini
-RUN echo "date.timezone = Europe/Berlin"  >> /usr/local/etc/php/php.ini
+# RUN echo "error_reporting=E_ALL & ~E_WARNING & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED"  >> /usr/local/etc/php/php.ini
+# RUN echo "date.timezone = Europe/Berlin"  >> /usr/local/etc/php/php.ini
+ADD php.ini /usr/local/etc/php/
 
 # Update system and install essentials
 RUN apt-get update \
