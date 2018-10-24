@@ -12,9 +12,10 @@ USER root
 ENV ADMIN_USER=admin
 ENV ADMIN_PASSWORD="password"
 ENV ADMIN_EMAIL="dummy@address.local"
+ENV MYSQL_USER="ojs"
 ENV MYSQL_PASSWORD="ojs"
 ENV MYSQL_DB="ojs"
-ENV OJS_VERSION="ojs-stable-3_1_1"
+ENV OJS_BRANCH="ojs-stable-3_1_1"
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /tmp
@@ -49,8 +50,9 @@ RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
 RUN echo "mysql.default_socket=/var/run/mysqld/mysqld.sock" >> /usr/local/etc/php/php.ini
 RUN find /var/lib/mysql -type f -exec touch {} \; \
   && service mysql start \
+  && sh -c "echo \"CREATE USER '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';\" | mysql -u root" \
   && sh -c "echo \"CREATE DATABASE ${MYSQL_DB};\" | mysql" \ 
-  && mysqladmin -u root password ${MYSQL_PASSWORD}
+  && sh -c "echo \"GRANT ALL PRIVILEGES on ${MYSQL_DB}.* TO '${MYSQL_USER}'@'localhost'; FLUSH PRIVILEGES;\" | mysql" 
 
 # configure git
 RUN git config --global url.https://.insteadOf git://
@@ -62,9 +64,9 @@ RUN mkdir -p /var/www/ojsfiles
 # Get OJS3 code and prepare it
 WORKDIR /var/www/html
 RUN git init \
-  && git remote add origin https://github.com/pkp/ojs.git \
-  && git fetch origin \
-  && git checkout --track origin/$OJS_VERSION
+  && git remote add -t $OJS_BRANCH origin https://github.com/pkp/ojs.git \
+  && git fetch origin $OJS_BRANCH \
+  && git checkout --track origin/$OJS_BRANCH
 RUN git submodule update --init --recursive >/dev/null
 RUN composer update -d lib/pkp --no-dev \
   && composer install -d plugins/paymethod/paypal --no-dev \
@@ -83,14 +85,10 @@ RUN git submodule update --init --recursive
 
 WORKDIR /var/www
 RUN chgrp -f -R www-data html \
-  && chmod -R 775 html \
+  && chmod -R 771 html \
   && chmod g+s html \
-  && setfacl -Rm o::rx,d:o::rx html \
+  && setfacl -Rm o::x,d:o::x html \
   && setfacl -Rm g::rwx,d:g::rwx html
-#WORKDIR /var/www
-#RUN chmod -R 771 html \
-#  && chmod -R 777 html/cache \
-#  && chmod -R 777 html/public
 
 # startup script
 RUN echo "#!/bin/bash\nfind /var/lib/mysql -type f -exec touch {} \;\nservice mysql start\napachectl -DFOREGROUND" >> /root/startup.sh  \
