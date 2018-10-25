@@ -20,10 +20,16 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 WORKDIR /tmp
 
-# PHP settings
-# RUN echo "error_reporting=E_ALL & ~E_WARNING & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED"  >> /usr/local/etc/php/php.ini
-# RUN echo "date.timezone = Europe/Berlin"  >> /usr/local/etc/php/php.ini
+# Adding configuration files
 ADD php.ini /usr/local/etc/php/
+ADD ojs-apache.conf /etc/apache2/conf-available
+ADD ojs-ssl-site.conf /etc/apache2/sites-available
+ADD ojs-site.conf /etc/apache2/sites-available
+
+# Adding SSL keys and protect them
+ADD apache.crt /etc/apache2/ssl
+ADD apache.key /etc/apache2/ssl
+RUN chmod 600 -R /etc/apache2/ssl
 
 # Update system and install essentials
 RUN apt-get update \
@@ -37,6 +43,7 @@ RUN apt-get update \
   libssl-dev \
   mysql-server \ 
   nano \
+  openssl \
   supervisor \
   unzip \
   && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
@@ -53,6 +60,12 @@ RUN find /var/lib/mysql -type f -exec touch {} \; \
   && sh -c "echo \"CREATE USER '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';\" | mysql -u root" \
   && sh -c "echo \"CREATE DATABASE ${MYSQL_DB};\" | mysql" \ 
   && sh -c "echo \"GRANT ALL PRIVILEGES on ${MYSQL_DB}.* TO '${MYSQL_USER}'@'localhost'; FLUSH PRIVILEGES;\" | mysql" 
+
+# Configure Apache
+RUN a2enconf ojs-apache \
+  && a2enmod ssl \
+  && a2ensite ojs-site \
+  && a2ensite ojs-ssl-site
 
 # configure git
 RUN git config --global url.https://.insteadOf git://
