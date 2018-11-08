@@ -21,14 +21,14 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 WORKDIR /tmp
 
 # Adding configuration files
-ADD php.ini /usr/local/etc/php/
-ADD ojs-apache.conf /etc/apache2/conf-available
-ADD ojs-ssl-site.conf /etc/apache2/sites-available
-ADD ojs-site.conf /etc/apache2/sites-available
+ADD conf/php.ini /usr/local/etc/php/
+ADD conf/ojs-apache.conf /etc/apache2/conf-available
+ADD conf/ojs-ssl-site.conf /etc/apache2/sites-available
+ADD conf/ojs-site.conf /etc/apache2/sites-available
 
 # Adding SSL keys and protect them
-ADD apache.crt /etc/apache2/ssl
-ADD apache.key /etc/apache2/ssl
+ADD ssl/apache.crt /etc/apache2/ssl
+ADD ssl/apache.key /etc/apache2/ssl
 RUN chmod 600 -R /etc/apache2/ssl
 
 # Update system and install essentials
@@ -38,12 +38,15 @@ RUN apt-get update \
   build-essential \
   curl \
   cron \
+  Exiftool \
   git \
   gnupg \
+  ImageMagick \
   libssl-dev \
   mysql-server \ 
   nano \
   openssl \
+  pdftk \
   supervisor \
   unzip \
   && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
@@ -64,6 +67,7 @@ RUN find /var/lib/mysql -type f -exec touch {} \; \
 # Configure Apache
 RUN a2enconf ojs-apache \
   && a2enmod ssl \
+  && a2enmod rewrite \
   && a2ensite ojs-site \
   && a2ensite ojs-ssl-site
 
