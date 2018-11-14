@@ -1,7 +1,7 @@
 #!/bin/sh
 dockerid=diotough
 name=ojs3-dainst
-version=0.6
+version=1.0
 mysqlvolume=ojs3db
 appvolume=ojs3app
 filesvolume=ojs3files
