@@ -20,6 +20,10 @@ For further configuration of apache2 in general use _ojs-apache.conf_. _ojs-site
 
 ## Logging
 
+All logs by default routed to _/dev/stdout_ and _/dev/stderr_. To inspect live use `docker logs -f [container name]`. The run script _crun.sh_ set the container to use Docker's _json-file_ logging driver. Logging driver is setup to cycle through 3 files of each up to 10MB. Use appropriate tools like **jq** to inspect json logs in terminal. Log files are by default saved in _/var/lib/docker/containers/[container id]/[container id]-json.log_. Older logs are enumerated with a suffix: _-json.log.1_ and _-json.log.2_. For an easy, human readable printout with jq use: `cat *-json.log | jq '.'`.
+
+**Note:** Depending on your system you might need root rights to open the folder and/or read/cat the logs.
+
 ## Usage
 
 Available scripts are _cbuild.sh_, _crun.sh_, _cstart.sh_ and _cstop.sh_. All scripts use **/bin/sh** and are therefore compatible with all POSIX-compatible OS.
@@ -32,7 +36,7 @@ Available scripts are _cbuild.sh_, _crun.sh_, _cstart.sh_ and _cstop.sh_. All sc
 
 Builds the image from Dockerfile. If no parameters are given, default values are being used.
 
-#### Defaults:
+#### Defaults
 
 - dockerID: _dainst_
 - name: _ojs3_
@@ -46,7 +50,7 @@ Builds the image from Dockerfile. If no parameters are given, default values are
 
 Runs the container based on the built image. If no parameters are given, default values are being used. It is **highly advised** to specify a different password! Adjust port mappings as suited.
 
-#### Defaults:
+#### Defaults
 
 - dockerID: _dainst_
 - name: _ojs3_
@@ -57,11 +61,6 @@ Runs the container based on the built image. If no parameters are given, default
 - container name: _ojs3_
 - ssl port mapping: _8888_
 - http port mapping: _8080_
-- adminPassword:
-- adminMail:
-- mysqlUser:
-- mysqlPassword:
-- mysqlDBName:
 
 ### cstart
 
@@ -71,7 +70,7 @@ Runs the container based on the built image. If no parameters are given, default
 
 Starts the existing container. If no parameter is specified, default value is being used.
 
-#### Defaults:
+#### Defaults
 
 - container name: _ojs3_
 
@@ -83,6 +82,10 @@ Starts the existing container. If no parameter is specified, default value is be
 
 Stops the container if neccessary. If no parameter is specified, default value is being used.
 
-#### Defaults:
+#### Defaults
 
 - container name: _ojs3_
+
+## License
+
+Licensed under GPL-3.0. For further information see LICENSE.

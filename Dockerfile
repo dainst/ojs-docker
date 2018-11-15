@@ -70,17 +70,6 @@ RUN /etc/init.d/apache2 restart
 
 WORKDIR /tmp
 
-# Adding configuration files
-ADD conf/php.ini /etc/php/7.2/apache2/
-ADD conf/ojs-apache.conf /etc/apache2/conf-available
-ADD conf/ojs-ssl-site.conf /etc/apache2/sites-available
-ADD conf/ojs-site.conf /etc/apache2/sites-available
-
-# Adding SSL keys and protect them
-ADD ssl/apache.crt /etc/apache2/ssl
-ADD ssl/apache.key /etc/apache2/ssl
-RUN chmod 600 -R /etc/apache2/ssl
-
 # Update system and install essentials
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install \
@@ -105,10 +94,26 @@ RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
 # Configure Apache
-RUN a2enconf ojs-apache \
-    && a2enmod rewrite \
-    && a2ensite ojs-site 
+#RUN a2enconf ojs-apache \
+#    && a2enmod rewrite \
+#    && a2ensite ojs-site 
+# Adding configuration files
+ADD conf/php.ini /etc/php/7.2/apache2/
+ADD conf/ojs-apache.conf /etc/apache2/conf-available
+ADD conf/ojs-ssl-site.conf /etc/apache2/sites-available
+ADD conf/ojs-site.conf /etc/apache2/sites-available
+
+# Adding SSL keys and protect them
+ADD ssl/apache.crt /etc/apache2/ssl
+ADD ssl/apache.key /etc/apache2/ssl
+RUN chmod 600 -R /etc/apache2/ssl 
+
+RUN a2ensite ojs-site \
+    && a2dissite 000-default \
+    && a2enmod rewrite
 RUN echo "#!/bin/sh\nif [ -s /etc/apache2/sites-available/ojs-ssl-site.conf ]; then\na2enmod ssl\na2ensite ojs-ssl-site.conf\nfi"
+RUN ln -sf /dev/stdout /var/log/apache2/access.log \
+    && ln -sf /dev/stderr /var/log/apache2/error.log
 
 # Configure PHP to work with MySQL
 RUN echo "mysql.default_socket=./run/mysqld/mysqld.sock" >> /etc/php/7.2/apache2/php.ini \

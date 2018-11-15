@@ -25,4 +25,4 @@ do  case "$o" in
     esac
 done
 
-docker container run --detach --mount source=${filesvolume},target=/var/www/ojsfiles --mount source=${appvolume},target=/var/www/html --mount source=${mysqlvolume},target=/var/lib/mysql --publish ${httpmap}:80 --publish ${sslmap}:443 --name ${containername} ${dockerid}/${name}:${version}
+docker container run --log-driver json-file --log-opt max-size=10m --log-opt max-file=3 --log-opt mode=non-blocking --detach --mount source=${filesvolume},target=/var/www/ojsfiles --mount source=${appvolume},target=/var/www/html --mount source=${mysqlvolume},target=/var/lib/mysql --publish ${httpmap}:80 --publish ${sslmap}:443 --name ${containername} ${dockerid}/${name}:${version}
