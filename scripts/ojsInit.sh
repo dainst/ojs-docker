@@ -2,18 +2,17 @@
 
 set -e
 
-ojsBranch=ojs-stable-3_1_1
-dbUser=ojs
-dbPassword=ojs
-dbName=ojs
+adminUser=admin
 
-while getopts b:u:p:n: o
+while getopts b:a:m:u:p:n: o
 do  case "$o" in
     b)    ojsBranch="$OPTARG";;
+    a)    adminPwd="$OPTARG";;
+    m)    adminMail="$OPTARG";;
     u)    dbUser="$OPTARG";;
     p)    dbPassword="$OPTARG";;
     n)    dbName="$OPTARG";;
-    [?])  print >&2 "Usage: $0 [-b ojsBranch] [-u dbUser] [-p dbPassword] [-n dbName]"
+    [?])  print >&2 "Usage: $0 [-b ojsBranch] [-a adminPassword] [-m adminMail] [-u dbUser] [-p dbPassword] [-n dbName]"
           exit 1;;
     esac
 done
@@ -54,7 +53,7 @@ if [ ! -e /var/www/html/config.TEMPLATE.inc.php ]; then
     echo "Initializing git empty git repository... "
     git init
     echo "[ok]\n"
-    echo "Fetting branch ${ojsBranch} of OJS from github... "
+    echo "Fetching branch ${ojsBranch} of OJS from github... "
     git remote add -t ${ojsBranch} origin https://github.com/pkp/ojs.git
     git fetch origin --depth 1 ${ojsBranch}
     git checkout --track origin/${ojsBranch}
@@ -94,16 +93,16 @@ fi
 
 if { [ -e /var/www/html/config.inc.php ] && [ "installed = On" != "$(cat /var/www/html/config.inc.php | grep "installed = On")" ] ;} ; then
     echo "Starting OJS install script... \n"
-    expect /root/ojsInstall.exp
+    expect /root/ojsInstall.exp ${adminUser} ${adminPwd} ${adminMail} ${dbUser} ${dbPassword} ${dbName}
     echo "OJS install script done... [ok]\n"
 else
     echo "OJS is already setup and configured... \n"
 fi
 
-if [ -d "/var/www/html/plugins/generic/ojs-cilantro-plugin" ]; then
+if [ ! -d "/var/www/html/plugins/generic/ojs-cilantro-plugin" ]; then
     echo "Starting install script for DAI Plugins... \n"
     sh /root/dainstInit.sh
     echo "Finished install script for DAI Plugins... [ok]\n"
 
-    
+
 fi

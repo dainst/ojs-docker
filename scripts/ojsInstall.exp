@@ -1,5 +1,13 @@
 #!/usr/bin/expect -df
 set timeout 20
+
+set adminUser [lindex $argv 0]
+set adminPwd [lindex $argv 1]
+set adminMail [lindex $argv 2]
+set dbUser [lindex $argv 3]
+set dbPWd [lindex $argv 4]
+set dbName [lindex $argv 5]
+
 spawn php  /var/www/html/tools/install.php install
 
 expect "Select (en_US):"
@@ -21,16 +29,16 @@ expect "Directory for uploads: "
 send -- "/var/www/ojsfiles\n"
 
 expect "Username: "
-send -- "admin\n"
+send -- $adminUser\n
 
 expect "Password: "
-send -- "admin\n"
+send -- $adminPwd\n
 
 expect "Repeat password: "
-send -- "admin\n"
+send -- $adminPwd\n
 
 expect "Email: "
-send -- "admin@ojs.local\n"
+send -- $adminMail\n
 
 expect "Select: "
 send -- "mysqli\n"
@@ -39,13 +47,13 @@ expect "Host (None): "
 send -- "localhost\n"
 
 expect "Username (None): "
-send -- "ojs\n"
+send -- $dbUser\n
 
 expect "Password (None): "
-send -- "ojs\n"
+send -- $dbPWd\n
 
 expect "Database name: "
-send -- "ojs\n"
+send -- $dbName\n
 
 expect "Create new database "
 send -- "n\n"

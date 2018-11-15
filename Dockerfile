@@ -71,7 +71,7 @@ RUN /etc/init.d/apache2 restart
 WORKDIR /tmp
 
 # Adding configuration files
-ADD conf/php.ini /usr/local/etc/php/
+ADD conf/php.ini /etc/php/7.2/apache2/
 ADD conf/ojs-apache.conf /etc/apache2/conf-available
 ADD conf/ojs-ssl-site.conf /etc/apache2/sites-available
 ADD conf/ojs-site.conf /etc/apache2/sites-available
@@ -129,4 +129,4 @@ RUN chmod +x /root/ojsInstall.exp \
     && chmod +x /root/dockerEntry.sh
 
 # Entrypoint
-ENTRYPOINT ["/root/dockerEntry.sh"]
+ENTRYPOINT exec /root/dockerEntry.sh -b ${OJS_BRANCH} -a ${ADMIN_PASSWORD} -m ${ADMIN_EMAIL} -u ${MYSQL_USER} -p ${MYSQL_PASSWORD} -n ${MYSQL_DB}

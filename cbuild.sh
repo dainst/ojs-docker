@@ -1,6 +1,6 @@
 #!/bin/sh
-dockerid=diotough
-name=ojs3-dainst
+dockerid=dainst
+name=ojs3
 version=1.0
 
 while getopts d:n:v: o

@@ -1,6 +1,6 @@
 #!/bin/sh
-dockerid=diotough
-name=ojs3-dainst
+dockerid=dainst
+name=ojs3
 version=1.0
 mysqlvolume=ojs3db
 appvolume=ojs3app
@@ -20,7 +20,7 @@ do  case "$o" in
     c)    containername="$OPTARG";;
     s)    sslmap="$OPTARG";;
     h)    httpmap="$OPTARG";;
-    [?])  print >&2 "Usage: $0 [-d DockerID] [-n name] [-v version] [-m mysql volume] [-a app volume] [-f files volume] [-c container name] [-s ssl port mapping] [-h http port mapping]"
+    [?])  print >&2 "Usage: $0 [-d DockerID] [-n name] [-v version] [-m mysql volume] [-a app volume] [-f files volume] [-c container name] [-s ssl port mapping] [-h http port mapping] [-aP adminPassword] [-aM adminMail] [-dU mysqlUser] [-dP mysqlPassword] [-dN mysqlDBName]"
           exit 1;;
     esac
 done
