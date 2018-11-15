@@ -28,10 +28,11 @@ Available scripts are _cbuild.sh_, _crun.sh_, _cstart.sh_ and _cstop.sh_. All sc
 
 `sh cbuild.sh [-d dockerID] [-n name] [-v version]`
 
-**Description**
+#### Description
+
 Builds the image from Dockerfile. If no parameters are given, default values are being used.
 
-**Defaults:**
+#### Defaults:
 
 - dockerID: _dainst_
 - name: _ojs3_
@@ -41,10 +42,11 @@ Builds the image from Dockerfile. If no parameters are given, default values are
 
 `sh crun.sh [-d DockerID] [-n name] [-v version] [-m mysql volume] [-a app volume] [-f files volume] [-c container name] [-s ssl port mapping] [-h http port mapping] [-aP adminPassword] [-aM adminMail] [-dU mysqlUser] [-dP mysqlPassword] [-dN mysqlDBName]`
 
-**Description**
+#### Description
+
 Runs the container based on the built image. If no parameters are given, default values are being used. It is **highly advised** to specify a different password! Adjust port mappings as suited.
 
-**Defaults:**
+#### Defaults:
 
 - dockerID: _dainst_
 - name: _ojs3_
@@ -65,10 +67,11 @@ Runs the container based on the built image. If no parameters are given, default
 
 `sh cstart.sh [-c container name]`
 
-**Description**
+#### Description
+
 Starts the existing container. If no parameter is specified, default value is being used.
 
-**Defaults:**
+#### Defaults:
 
 - container name: _ojs3_
 
@@ -76,9 +79,10 @@ Starts the existing container. If no parameter is specified, default value is be
 
 `sh cstop.sh [-c container name]`
 
-**Description**
+#### Description
+
 Stops the container if neccessary. If no parameter is specified, default value is being used.
 
-**Defaults:**
+#### Defaults:
 
 - container name: _ojs3_
