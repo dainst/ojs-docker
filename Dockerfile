@@ -110,71 +110,23 @@ RUN a2enconf ojs-apache \
     && a2ensite ojs-site 
 RUN echo "#!/bin/sh\nif [ -s /etc/apache2/sites-available/ojs-ssl-site.conf ]; then\na2enmod ssl\na2ensite ojs-ssl-site.conf\nfi"
 
+# Configure PHP to work with MySQL
+RUN echo "mysql.default_socket=./run/mysqld/mysqld.sock" >> /etc/php/7.2/apache2/php.ini \
+    && echo "mysql.default_socket=./run/mysqld/mysqld.sock" >> /etc/php/7.2/cli/php.ini
+
 # configure git
 RUN git config --global url.https://.insteadOf git://
 RUN git config --global advice.detachedHead false
 
-# create files folder
-RUN mkdir -p /var/www/ojsfiles
+# Adding OJS installation scripts and changing permissions
+ADD scripts/dockerEntry.sh /root/dockerEntry.sh
+ADD scripts/ojsInstall.exp /root/ojsInstall.exp
+ADD scripts/ojsInit.sh /root/ojsInit.sh
+ADD scripts/dainstInit.sh /root/dainstInit.sh
+RUN chmod +x /root/ojsInstall.exp \
+    && chmod +x /root/ojsInit.sh \
+    && chmod +x /root/dainstInit.sh \
+    && chmod +x /root/dockerEntry.sh
 
-# Get OJS3 code and prepare it
-WORKDIR /var/www/html
-RUN git init \
-    && git remote add -t $OJS_BRANCH origin https://github.com/pkp/ojs.git \
-    && git fetch origin --depth 1 $OJS_BRANCH \
-    && git checkout --track origin/$OJS_BRANCH
-RUN git submodule update --init --recursive >/dev/null
-RUN composer install -v -d lib/pkp --no-dev \
-    && composer install -v -d plugins/paymethod/paypal --no-dev \
-    && composer install -v -d plugins/generic/citationStyleLanguage --no-dev
-RUN npm install -y \
-    && npm run build
-RUN cp config.TEMPLATE.inc.php config.inc.php
-
-# Fix access rights, set ACL and make everything accessible for www-data group
-WORKDIR /var/www
-RUN chgrp -f -R www-data html \
-    && chmod -R 771 html \
-    && chmod g+s html \
-    && setfacl -Rm o::x,d:o::x html \
-    && setfacl -Rm g::rwx,d:g::rwx html \
-    && chgrp -f -R www-data ojsfiles \
-    && chmod -R 771 ojsfiles \
-    && chmod g+s ojsfiles \
-    && setfacl -Rm o::x,d:o::x ojsfiles \
-    && setfacl -Rm g::rwx,d:g::rwx ojsfiles
-
-RUN echo "mysql.default_socket=./run/mysqld/mysqld.sock" >> /etc/php/7.2/apache2/php.ini \
-    && echo "mysql.default_socket=./run/mysqld/mysqld.sock" >> /etc/php/7.2/cli/php.ini
-RUN /etc/init.d/mysql start \
-    && service mysql status \
-    && sh -c "echo \"CREATE USER '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';\" | mysql -u root" \
-    && sh -c "echo \"UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE User='${MYSQL_USER}'; FLUSH PRIVILEGES;\" | mysql -u root" \
-    && sh -c "echo \"CREATE DATABASE ${MYSQL_DB};\" | mysql -u root" \ 
-    && sh -c "echo \"GRANT ALL PRIVILEGES on ${MYSQL_DB}.* TO '${MYSQL_USER}'@'localhost'; FLUSH PRIVILEGES;\" | mysql -u root"
-
-# Run OJS Installation Script
-ADD scripts/ojsInstall.exp /tmp/ojsInstall.exp
-RUN chmod +x /tmp/ojsInstall.exp
-RUN /etc/init.d/mysql start \
-    && expect /tmp/ojsInstall.exp
-
-# Install DAI Plugin
-WORKDIR /var/www/html/plugins
-RUN git clone https://github.com/dainst/ojs-cilantro-plugin.git generic/ojs-cilantro-plugin
-RUN git clone https://github.com/dainst/ojs-dainst-frontpage-generator-plugin.git generic/ojs-dainst-frontpage-generator-plugin
-RUN git clone https://github.com/dainst/ojs-dainst-zenonlink-plugin.git pubIds/zenon
-RUN git clone https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
-RUN git submodule update --init --recursive
-RUN mkdir /var/www/tmp \
-    && chgrp -f -R www-data /var/www/tmp \
-    && chmod -R 771 /var/www/tmp \
-    && chmod g+s /var/www/tmp \
-    && setfacl -Rm o::x,d:o::x /var/www/tmp \
-    && setfacl -Rm g::rwx,d:g::rwx /var/www/tmp
-RUN echo "[dainst]\ntmpPath = /var/www/tmp" >> /var/www/html/config.inc.php
-
-# startup script
-ADD scripts/dockerEntry.sh /root/startup.sh
-RUN chmod a+x /root/startup.sh
-ENTRYPOINT ["/root/startup.sh"]
+# Entrypoint
+ENTRYPOINT ["/root/dockerEntry.sh"]

@@ -1,4 +1,5 @@
 #!/bin/sh
-#find /var/lib/mysql -type f -exec touch {};
+
 service mysql start
+sh /root/ojsInit.sh
 apachectl -DFOREGROUND
