@@ -92,9 +92,32 @@ fi
 
 
 if { [ -e /var/www/html/config.inc.php ] && [ "installed = On" != "$(cat /var/www/html/config.inc.php | grep "installed = On")" ] ;} ; then
+    cd /var/www
     echo "Starting OJS install script... \n"
     expect /root/ojsInstall.exp ${adminUser} ${adminPwd} ${adminMail} ${dbUser} ${dbPassword} ${dbName}
     echo "OJS install script done... [ok]\n"
+
+    echo "Installing DAI OJS configure tool...\n"
+    echo "Fetching code..."
+    git clone https://github.com/dainst/ojs-config-tool ojsconfig
+    echo "[ok]\n"
+    echo "Installing PKP Texture plugin... \n"
+    echo "Fetching code... "
+    cd html/plugins
+    git clone --single-branch -b ${ojsBranch} https://github.com/asmecher/texture generic/texture
+    echo "[ok]\n"
+    echo "Updating submodules... "
+    git submodule update --init --recursive
+    echo "[ok]\n"
+    echo "Updating permissions... "
+    chgrp -f -R www-data generic/texture
+    chmod -R 771 generic/texture
+    chmod g+s generic/texture
+    setfacl -Rm o::x,d:o::x generic/texture
+    setfacl -Rm g::rwx,d:g::rwx generic/texturew
+    echo "[ok]\n"
+    echo "Starting DAI OJS configure tool...\n"
+    #php /var/www/ojsconfig/ojs3.php
 else
     echo "OJS is already setup and configured... \n"
 fi
@@ -103,6 +126,4 @@ if [ ! -d "/var/www/html/plugins/generic/ojs-cilantro-plugin" ]; then
     echo "Starting install script for DAI Plugins... \n"
     sh /root/dainstInit.sh
     echo "Finished install script for DAI Plugins... [ok]\n"
-
-
 fi

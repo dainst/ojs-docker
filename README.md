@@ -20,7 +20,7 @@ For further configuration of apache2 in general use _ojs-apache.conf_. _ojs-site
 
 ## Logging
 
-All logs by default routed to _/dev/stdout_ and _/dev/stderr_. To inspect live use `docker logs -f [container name]`. The run script _crun.sh_ set the container to use Docker's _json-file_ logging driver. Logging driver is setup to cycle through 3 files of each up to 10MB. Use appropriate tools like **jq** to inspect json logs in terminal. Log files are by default saved in _/var/lib/docker/containers/[container id]/[container id]-json.log_. Older logs are enumerated with a suffix: _-json.log.1_ and _-json.log.2_. For an easy, human readable printout with jq use: `cat *-json.log | jq '.'`.
+All logs by default routed to _/dev/stdout_ and _/dev/stderr_. To inspect live use `docker logs -f [container name]`. The run script _crun.sh_ set the container to use Docker's _json-file_ logging driver. Logging driver is setup to cycle through 3 files of each up to 10MB. Use appropriate tools like [jq](https://stedolan.github.io/jq/) to inspect json logs in terminal. Log files are by default saved in _/var/lib/docker/containers/[container id]/[container id]-json.log_. Older logs are enumerated with a suffix: _-json.log.1_ and _-json.log.2_. For an easy, human readable printout with jq use: `cat *-json.log | jq '.'`.
 
 **Note:** Depending on your system you might need root rights to open the folder and/or read/cat the logs.
 
