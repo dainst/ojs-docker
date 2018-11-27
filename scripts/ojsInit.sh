@@ -99,7 +99,7 @@ if { [ -e /var/www/html/config.inc.php ] && [ "installed = On" != "$(cat /var/ww
 
     echo "Installing DAI OJS configure tool...\n"
     echo "Fetching code..."
-    git clone https://github.com/dtwardy/ojs3_dainst-config ojsconfig
+    git clone https://github.com/dainst/ojs-config-tool ojsconfig
     echo "[ok]\n"
     echo "Installing PKP Texture plugin... \n"
     echo "Fetching code... "
@@ -114,10 +114,10 @@ if { [ -e /var/www/html/config.inc.php ] && [ "installed = On" != "$(cat /var/ww
     chmod -R 771 generic/texture
     chmod g+s generic/texture
     setfacl -Rm o::x,d:o::x generic/texture
-    setfacl -Rm g::rwx,d:g::rwx generic/texturew
+    setfacl -Rm g::rwx,d:g::rwx generic/texture
     echo "[ok]\n"
     echo "Running DAI OJS configure tool...\n"
-    php /var/www/ojsconfig/ojs3config.php
+    php /var/www/ojsconfig/ojs3.php
 else
     echo "OJS is already setup and configured... \n"
 fi
