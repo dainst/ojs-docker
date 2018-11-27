@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  ojs3:
+    build: .
+    volumes:
+      - mysqlvolume:/var/lib/mysql
+      - appvolume:/var/www/html
+      - filesvolume:/var/www/ojsfiles
+    ports:
+      - "4444:80"
+    environment:
+      - b_ADMIN_USER="admin"
+      - b_ADMIN_PASSWORD="password"
+      - b_ADMIN_EMAIL="dummy@address.local"
+      - b_MYSQL_USER="ojs"
+      - b_MYSQL_PASSWORD="ojs"
+      - b_MYSQL_DB="ojs"
+      - b_OJS_BRANCH="ojs-stable-3_1_1"
+
+volumes:
+  mysqlvolume:
+  appvolume:
+  filesvolume:
