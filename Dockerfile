@@ -6,7 +6,7 @@ LABEL version="1.0"
 LABEL description="DAI specific OJS3 Docker container with DAI specific plugins"
 LABEL "license"="GNU GPL 3"
 
-EXPOSE 80 443
+EXPOSE 8000 443
 USER root
 
 # Setting default values for buildtime arguments
