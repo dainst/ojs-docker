@@ -6,10 +6,10 @@ LABEL version="1.0"
 LABEL description="DAI specific OJS3 Docker container with DAI specific plugins"
 LABEL "license"="GNU GPL 3"
 
-EXPOSE 8000 443
 USER root
 
 # Setting default values for buildtime arguments
+ARG OJS_PORT="8000"
 ARG b_ADMIN_USER="admin"
 ARG b_ADMIN_PASSWORD="password"
 ARG b_ADMIN_EMAIL="dummy@address.local"
@@ -19,6 +19,7 @@ ARG b_MYSQL_DB="ojs"
 ARG b_OJS_BRANCH="ojs-stable-3_1_1"
 
 # Sett environment variables to buildtime arguments by default
+ENV OJS_PORT=$OJS_PORT
 ENV ADMIN_USER=$b_ADMIN_USER
 ENV ADMIN_PASSWORD=$b_ADMIN_PASSWORD
 ENV ADMIN_EMAIL=$b_ADMIN_EMAIL
@@ -111,6 +112,10 @@ ADD conf/ojs-apache.conf /etc/apache2/conf-available
 ADD conf/ojs-ssl-site.conf /etc/apache2/sites-available
 ADD conf/ojs-site.conf /etc/apache2/sites-available
 
+# Ports
+RUN sed -i "s/^Listen 80.*\$/Listen $OJS_PORT/" /etc/apache2/ports.conf
+RUN sed -i "s/^<VirtualHost \*:80>.*\$/<VirtualHost \*:$OJS_PORT>/" /etc/apache2/sites-available/ojs-site.conf
+
 # Adding SSL keys and set access rights them
 ADD ssl/apache.crt /etc/apache2/ssl
 ADD ssl/apache.key /etc/apache2/ssl
@@ -140,3 +145,5 @@ RUN chmod +x /root/ojsInstall.exp \
 
 # Entrypoint
 ENTRYPOINT exec /root/dockerEntry.sh -b ${OJS_BRANCH} -a ${ADMIN_PASSWORD} -m ${ADMIN_EMAIL} -u ${MYSQL_USER} -p ${MYSQL_PASSWORD} -n ${MYSQL_DB}
+
+EXPOSE $OJS_PORT 443
