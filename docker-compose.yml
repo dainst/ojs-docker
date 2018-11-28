@@ -3,3 +3,12 @@ version: '3.7'
 services:
   ojs3:
     image: dainst/cilantro-ojs3
+    volumes:
+      - mysqlvolume:/var/lib/mysql
+      - appvolume:/var/www/html
+      - filesvolume:/var/www/ojsfiles
+
+volumes:
+  mysqlvolume:
+  appvolume:
+  filesvolume:

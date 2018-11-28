@@ -2,21 +2,14 @@ version: '3.7'
 
 services:
   ojs3:
-    build: .
-    volumes:
-      - mysqlvolume:/var/lib/mysql
-      - appvolume:/var/www/html
-      - filesvolume:/var/www/ojsfiles
-    ports:
-      - "4444:80"
-    environment:
-      b_ADMIN_USER: /run/secrets/admin_user
-      b_ADMIN_PASSWORD: /run/secrets/admin_password
-      b_ADMIN_EMAIL: /run/secrets/admin_email
-      b_MYSQL_USER: /run/secrets/mysql_user
-      b_MYSQL_PASSWORD: /run/secrets/mysql_password
-      b_MYSQL_DB: /run/secrets/mysql_db
-      b_OJS_BRANCH: ojs-stable-3_1_1
+    #environment:
+      #b_ADMIN_USER: /run/secrets/admin_user
+      #b_ADMIN_PASSWORD: /run/secrets/admin_password
+      #b_ADMIN_EMAIL: /run/secrets/admin_email
+      #b_MYSQL_USER: /run/secrets/mysql_user
+      #b_MYSQL_PASSWORD: /run/secrets/mysql_password
+      #b_MYSQL_DB: /run/secrets/mysql_db
+      #b_OJS_BRANCH: ojs-stable-3_1_1
     secrets:
       - admin_user
       - admin_password
@@ -24,11 +17,19 @@ services:
       - mysql_user
       - mysql_password
       - mysql_db
-
-volumes:
-  mysqlvolume:
-  appvolume:
-  filesvolume:
+    networks:
+      - backend
+      - frontend
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.frontend.rule: "PathPrefixStrip:/"
+        traefik.backend: ojs3
+        traefik.port: 8000
+        traefik.docker.network: frontend
+      restart_policy:
+        condition: any
+        delay: 0s
 
 secrets:
   admin_user:
@@ -43,3 +44,11 @@ secrets:
     file: mysql_password.txt
   mysql_db:
     file: mysql_db.txt
+
+networks:
+  backend:
+    name: backend
+    external: true
+  frontend:
+    name: frontend
+    external: true
