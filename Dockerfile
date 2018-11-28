@@ -106,6 +106,7 @@ RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
 # Configure Apache
 # Adding configuration files
 ADD conf/php.ini /etc/php/7.2/apache2/
+ADD conf/php.ini /etc/php/7.2/cli/
 ADD conf/ojs-apache.conf /etc/apache2/conf-available
 ADD conf/ojs-ssl-site.conf /etc/apache2/sites-available
 ADD conf/ojs-site.conf /etc/apache2/sites-available
@@ -122,13 +123,10 @@ RUN echo "#!/bin/sh\nif [ -s /etc/apache2/sites-available/ojs-ssl-site.conf ]; t
 RUN ln -sf /dev/stdout /var/log/apache2/access.log \
     && ln -sf /dev/stderr /var/log/apache2/error.log
 
-# Configure PHP to work with MySQL
-RUN echo "mysql.default_socket=./run/mysqld/mysqld.sock" >> /etc/php/7.2/apache2/php.ini \
-    && echo "mysql.default_socket=./run/mysqld/mysqld.sock" >> /etc/php/7.2/cli/php.ini
-
 # configure git for Entrypoint script
 RUN git config --global url.https://.insteadOf git://
 RUN git config --global advice.detachedHead false
+
 
 # Adding OJS installation scripts and changing permissions
 ADD scripts/dockerEntry.sh /root/dockerEntry.sh

@@ -1,5 +1,5 @@
 #!/usr/bin/expect -df
-set timeout 20
+set timeout 20000
 
 set adminUser [lindex $argv 0]
 set adminPwd [lindex $argv 1]
