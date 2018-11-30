@@ -2,6 +2,9 @@ version: '3.7'
 
 services:
   ojs3:
+    ports:
+      - "4444:8000"
+      # - "443:443"
     #environment:
       #b_ADMIN_USER: /run/secrets/admin_user
       #b_ADMIN_PASSWORD: /run/secrets/admin_password
