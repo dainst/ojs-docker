@@ -3,8 +3,8 @@ version: '3.7'
 services:
   ojs3:
     #ports:
-     # - "4444:8000"
-      # - "443:443"
+      #- "4444:8000"
+      #- "443:443"
     #environment:
       #b_ADMIN_USER: /run/secrets/admin_user
       #b_ADMIN_PASSWORD: /run/secrets/admin_password
@@ -26,17 +26,10 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.frontend.entryPoints=http"
-        - "traefik.frontend.rule=PathPrefixStrip:/ojs"
-        - "traefik.frontend.passHostHeader=true"
-        # https://github.com/containous/traefik/issues/563#issuecomment-421360934
-        #- "traefik.frontend.redirect.regex=^(.*)/ojs$$"
-        #- "traefik.frontend.redirect.replacement=$$1/ojs/"
-        #- "traefik.frontend.rule=PathPrefix:/ojs;ReplacePathRegex: ^/ojs(.*) /$$1"
-        # - "traefik.frontend.rule=PathPrefix:/ojs;PathPrefixStripRegex: ^/ojs(.*) /$$1"
-        - "traefik.backend=ojs3"
+        - "traefik.frontend.rule=Host:ojs.test.idai.world"
+        #- "traefik.frontend.rule=Host:ojs.localhost"
+        - "traefik.passHostHeader=true"
         - "traefik.port=8000"
-        - "traefik.docker.network=frontend"
       restart_policy:
         condition: any
         delay: 0s

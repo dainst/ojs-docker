@@ -128,4 +128,5 @@ if [ ! -d "/var/www/html/plugins/generic/ojs-cilantro-plugin" ]; then
     echo "Finished install script for DAI Plugins... [ok]\n"
 fi
 
-echo "base_url[index] = http://10.202.7.143/ojs/index.php/test" | tee -a /var/www/html/config.inc.php
+#sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
+#echo "base_url[index] = http://192.168.178.39/ojs/index.php/test" | tee -a /var/www/html/config.inc.php
