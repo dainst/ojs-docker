@@ -4,17 +4,18 @@ set -e
 
 cd /var/www/html/plugins
 
-echo "Installing cilantro-plugins... "
-git clone https://github.com/dainst/ojs-cilantro-plugin.git generic/ojs-cilantro-plugin
-echo "[ok]\n"
-echo "Installing dainst-frontpage-generator-plugin... "
-git clone https://github.com/dainst/ojs-dainst-frontpage-generator-plugin.git generic/ojs-dainst-frontpage-generator-plugin
-echo "[ok]\n"
-echo "Installing dainst-zenonlink-plugin... "
-git clone https://github.com/dainst/ojs-dainst-zenonlink-plugin.git pubIds/zenon
-echo "[ok]\n"
+# plugins are not ready for ojs3
+#echo "Installing cilantro-plugins... "
+#git clone https://github.com/dainst/ojs-cilantro-plugin.git generic/ojs-cilantro-plugin
+#echo "[ok]\n"
+#echo "Installing dainst-frontpage-generator-plugin... "
+#git clone https://github.com/dainst/ojs-dainst-frontpage-generator-plugin.git generic/ojs-dainst-frontpage-generator-plugin
+#echo "[ok]\n"
+#echo "Installing dainst-zenonlink-plugin... "
+#git clone https://github.com/dainst/ojs-dainst-zenonlink-plugin.git pubIds/zenon
+#echo "[ok]\n"
 echo "Installing dainst-epicur-plugin... "
-git clone https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
+git clone -b ojs3 https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
 echo "[ok]\n"
 
 echo "Updating dependencies... "
