@@ -1,38 +1,59 @@
-#!/bin/sh
+#!/bin/bash
+set -eo pipefail
 
-set -e
+# usage: file_env VAR [DEFAULT]
+#    ie: file_env 'XYZ_DB_PASSWORD' 'example'
+# (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
+#  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+file_env() {
+	local var="$1"
+	local fileVar="${var}_FILE"
+	local def="${2:-}"
+	if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
+		echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+		exit 1
+	fi
+	local val="$def"
+	if [ "${!var:-}" ]; then
+		val="${!var}"
+	elif [ "${!fileVar:-}" ]; then
+		val="$(< "${!fileVar}")"
+	fi
+	export "$var"="$val"
+	unset "$fileVar"
+}
 
-adminUser=admin
+envs=(
+    ADMIN_USER
+    ADMIN_PASSWORD
+    ADMIN_EMAIL
+    MYSQL_USER
+    MYSQL_PASSWORD
+    MYSQL_DB
+)
 
-while getopts b:a:m:u:p:n: o
-do  case "$o" in
-    b)    ojsBranch="$OPTARG";;
-    a)    adminPwd="$OPTARG";;
-    m)    adminMail="$OPTARG";;
-    u)    dbUser="$OPTARG";;
-    p)    dbPassword="$OPTARG";;
-    n)    dbName="$OPTARG";;
-    [?])  print >&2 "Usage: $0 [-b ojsBranch] [-a adminPassword] [-m adminMail] [-u dbUser] [-p dbPassword] [-n dbName]"
-          exit 1;;
-    esac
+for e in "${envs[@]}"; do
+    file_env "$e"
 done
 
-if  [ "${dbUser}" != "$(sh -c "echo \"SELECT User from mysql.user;\" | mysql -u root" | grep ${dbUser})" ]; then
-    echo "User ${dbUser} not found. Creating new user... "
-    sh -c "echo \"CREATE USER '${dbUser}'@'localhost' IDENTIFIED BY '${dbPassword}';\" | mysql -u root"
-    sh -c "echo \"UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE User='${dbUser}'; FLUSH PRIVILEGES;\" | mysql -u root"
+service mysql start
+
+if  [ "${MYSQL_USER}" != "$(sh -c "echo \"SELECT User from mysql.user;\" | mysql -u root" | grep ${MYSQL_USER})" ]; then
+    echo "User ${MYSQL_USER} not found. Creating new user... "
+    sh -c "echo \"CREATE USER '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';\" | mysql -u root"
+    sh -c "echo \"UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE User='${MYSQL_USER}'; FLUSH PRIVILEGES;\" | mysql -u root"
     echo "[ok]\n"
 else
-    echo "using existing MySQL User ${dbUser}...\n"
+    echo "using existing MySQL User ${MYSQL_USER}...\n"
 fi
 
-if  [ "${dbUser}" != "$(sh -c "echo \"SHOW DATABASES;\" | mysql -u root" | grep ${dbName})" ]; then
-    echo "Database ${dbName} not found. Creating database... "
-    sh -c "echo \"CREATE DATABASE ${dbName};\" | mysql -u root"
-    sh -c "echo \"GRANT ALL PRIVILEGES on ${dbName}.* TO '${dbUser}'@'localhost'; FLUSH PRIVILEGES;\" | mysql -u root"
+if  [ "${MYSQL_USER}" != "$(sh -c "echo \"SHOW DATABASES;\" | mysql -u root" | grep ${MYSQL_DB})" ]; then
+    echo "Database ${MYSQL_DB} not found. Creating database... "
+    sh -c "echo \"CREATE DATABASE ${MYSQL_DB};\" | mysql -u root"
+    sh -c "echo \"GRANT ALL PRIVILEGES on ${MYSQL_DB}.* TO '${MYSQL_USER}'@'localhost'; FLUSH PRIVILEGES;\" | mysql -u root"
     echo "[ok]\n"
 else
-    echo "using existing MySQL database ${dbName}...\n"
+    echo "using existing MySQL database ${MYSQL_DB}...\n"
 fi
 
 if [ ! -e /var/www/html/config.TEMPLATE.inc.php ]; then
@@ -53,10 +74,10 @@ if [ ! -e /var/www/html/config.TEMPLATE.inc.php ]; then
     echo "Initializing git empty git repository... "
     git init
     echo "[ok]\n"
-    echo "Fetching branch ${ojsBranch} of OJS from github... "
-    git remote add -t ${ojsBranch} origin https://github.com/pkp/ojs.git
-    git fetch origin --depth 1 ${ojsBranch}
-    git checkout --track origin/${ojsBranch}
+    echo "Fetching branch ${OJS_BRANCH} of OJS from github... "
+    git remote add -t ${OJS_BRANCH} origin https://github.com/pkp/ojs.git
+    git fetch origin --depth 1 ${OJS_BRANCH}
+    git checkout --track origin/${OJS_BRANCH}
     echo "[ok]\n"
     echo "Updating submodules... "
     git submodule update --init --recursive
@@ -94,7 +115,7 @@ fi
 if { [ -e /var/www/html/config.inc.php ] && [ "installed = On" != "$(cat /var/www/html/config.inc.php | grep "installed = On")" ] ;} ; then
     cd /var/www
     echo "Starting OJS install script... \n"
-    expect /root/ojsInstall.exp ${adminUser} ${adminPwd} ${adminMail} ${dbUser} ${dbPassword} ${dbName}
+    expect /root/ojsInstall.exp ${ADMIN_USER} ${ADMIN_PASSWORD} ${ADMIN_EMAIL} ${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_DB}
     echo "OJS install script done... [ok]\n"
 
     echo "Installing DAI OJS configure tool...\n"
@@ -104,7 +125,7 @@ if { [ -e /var/www/html/config.inc.php ] && [ "installed = On" != "$(cat /var/ww
     echo "Installing PKP Texture plugin... \n"
     echo "Fetching code... "
     cd html/plugins
-    git clone --single-branch -b ${ojsBranch} https://github.com/asmecher/texture generic/texture
+    git clone --single-branch -b ${OJS_BRANCH} https://github.com/asmecher/texture generic/texture
     echo "[ok]\n"
     echo "Updating submodules... "
     git submodule update --init --recursive
@@ -130,3 +151,5 @@ fi
 
 #sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
 #echo "base_url[index] = http://192.168.178.39/ojs/index.php/test" | tee -a /var/www/html/config.inc.php
+
+apachectl -DFOREGROUND

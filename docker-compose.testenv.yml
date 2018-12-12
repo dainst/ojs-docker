@@ -5,14 +5,14 @@ services:
     #ports:
       #- "4444:8000"
       #- "443:443"
-    #environment:
-      #b_ADMIN_USER: /run/secrets/admin_user
-      #b_ADMIN_PASSWORD: /run/secrets/admin_password
-      #b_ADMIN_EMAIL: /run/secrets/admin_email
-      #b_MYSQL_USER: /run/secrets/mysql_user
-      #b_MYSQL_PASSWORD: /run/secrets/mysql_password
-      #b_MYSQL_DB: /run/secrets/mysql_db
-      #b_OJS_BRANCH: ojs-stable-3_1_1
+    environment:
+      ADMIN_USER_FILE: /run/secrets/admin_user
+      ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+      ADMIN_EMAIL_FILE: /run/secrets/admin_email
+      MYSQL_USER_FILE: /run/secrets/mysql_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+      MYSQL_DB_FILE: /run/secrets/mysql_db
+      OJS_BRANCH: "ojs-stable-3_1_1"
     secrets:
       - admin_user
       - admin_password

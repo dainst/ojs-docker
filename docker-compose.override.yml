@@ -6,10 +6,10 @@ services:
     ports:
       - "80:8000"
     environment:
-      - b_ADMIN_USER="admin"
-      - b_ADMIN_PASSWORD="password"
-      - b_ADMIN_EMAIL="dummy@address.local"
-      - b_MYSQL_USER="ojs"
-      - b_MYSQL_PASSWORD="ojs"
-      - b_MYSQL_DB="ojs"
-      - b_OJS_BRANCH="ojs-stable-3_1_1"
+      - ADMIN_USER="admin"
+      - ADMIN_PASSWORD="password"
+      - ADMIN_EMAIL="dummy@address.local"
+      - MYSQL_USER="ojs"
+      - MYSQL_PASSWORD="ojs"
+      - MYSQL_DB="ojs"
+      - OJS_BRANCH="ojs-stable-3_1_1"
