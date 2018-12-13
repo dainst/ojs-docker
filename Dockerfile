@@ -102,9 +102,7 @@ RUN git config --global advice.detachedHead false
 
 # Adding OJS installation scripts and changing permissions
 COPY scripts/ojsInstall.exp /root/ojsInstall.exp
-COPY scripts/dainstInit.sh /root/dainstInit.sh
-RUN chmod +x /root/ojsInstall.exp \
-    && chmod +x /root/dainstInit.sh
+RUN chmod +x /root/ojsInstall.exp
 
 # Entrypoint
 COPY ./docker-entrypoint.sh /usr/local/bin/
