@@ -33,20 +33,26 @@ services:
       restart_policy:
         condition: any
         delay: 0s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        mode: "non-blocking"
 
 secrets:
   admin_user:
-    file: admin_user.txt
+    file: secrets/admin_user.txt
   admin_password:
-    file: admin_password.txt
+    file: secrets/admin_password.txt
   admin_email:
-    file: admin_email.txt
+    file: secrets/admin_email.txt
   mysql_user:
-    file: mysql_user.txt
+    file: secrets/mysql_user.txt
   mysql_password:
-    file: mysql_password.txt
+    file: secrets/mysql_password.txt
   mysql_db:
-    file: mysql_db.txt
+    file: secrets/mysql_db.txt
 
 networks:
   backend:
