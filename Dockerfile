@@ -78,6 +78,7 @@ COPY conf/php.ini /etc/php/7.2/cli/
 COPY conf/ojs-apache.conf /etc/apache2/conf-available
 COPY conf/ojs-ssl-site.conf /etc/apache2/sites-available
 COPY conf/ojs-site.conf /etc/apache2/sites-available
+COPY conf/.htpasswd /etc/apache2/
 
 # Ports
 RUN sed -i "s/^Listen 80.*\$/Listen $OJS_PORT/" /etc/apache2/ports.conf
@@ -94,6 +95,7 @@ RUN a2ensite ojs-site \
 RUN echo "#!/bin/sh\nif [ -s /etc/apache2/sites-available/ojs-ssl-site.conf ]; then\na2enmod ssl\na2ensite ojs-ssl-site.conf\nfi"
 RUN ln -sf /dev/stdout /var/log/apache2/access.log \
     && ln -sf /dev/stderr /var/log/apache2/error.log
+
 
 # configure git for Entrypoint script
 RUN git config --global url.https://.insteadOf git://
