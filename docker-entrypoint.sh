@@ -192,7 +192,7 @@ if [ ! -d "/var/www/html/plugins/oaiMetadataFormats/epicur" ]; then
     echo "Finished install script for DAI Plugins... [ok]\n"
 fi
 
-#sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
+sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
 #echo "base_url[index] = http://192.168.178.39/ojs/index.php/test" | tee -a /var/www/html/config.inc.php
 
 apachectl -DFOREGROUND
