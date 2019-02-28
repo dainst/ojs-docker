@@ -9,6 +9,10 @@ LABEL license="GNU GPL 3"
 ENV DEBIAN_FRONTEND noninteractive
 ENV OJS_PORT="8000"
 
+
+RUN apt-get update && apt-get install -y \
+    gnupg2
+
 # Add MariaDB repo
 RUN apt-key adv --no-tty --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8
 RUN add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirrors.dotsrc.org/mariadb/repo/10.3/debian stretch main'
@@ -22,7 +26,6 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     curl \
     dirmngr \
-    gnupg2 \
     openssl \
     software-properties-common \
     wget \
