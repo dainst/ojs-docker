@@ -1,16 +1,15 @@
 FROM debian:9.5-slim
 
 LABEL maintainer="Deutsches Archäologisches Institut: dev@dainst.org"
-LABEL "author"="Dennis Twardy: kontakt@dennistwardy.com"
+LABEL author="Dennis Twardy: kontakt@dennistwardy.com"
 LABEL version="1.0"
 LABEL description="DAI specific OJS3 Docker container with DAI specific plugins"
-LABEL "license"="GNU GPL 3"
+LABEL license="GNU GPL 3"
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV OJS_PORT="8000"
 
 
-# Installing software packages
 RUN apt-get update && apt-get install -y \
     apt-transport-https \
     bash-completion \
@@ -65,13 +64,15 @@ RUN apt-get update && apt-get -y install \
     pdftk \
     supervisor \
     unzip 
+WORKDIR /tmp
+
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
     && apt-get -y install \
     nodejs
 RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
-# Configure Apache
+## Configure Apache
 # Adding configuration files
 COPY conf/php.ini /etc/php/7.2/apache2/
 COPY conf/php.ini /etc/php/7.2/cli/
@@ -79,15 +80,13 @@ COPY conf/ojs-apache.conf /etc/apache2/conf-available
 COPY conf/ojs-ssl-site.conf /etc/apache2/sites-available
 COPY conf/ojs-site.conf /etc/apache2/sites-available
 COPY conf/.htpasswd /etc/apache2/
-
 # Ports
 RUN sed -i "s/^Listen 80.*\$/Listen $OJS_PORT/" /etc/apache2/ports.conf
 RUN sed -i "s/^<VirtualHost \*:80>.*\$/<VirtualHost \*:$OJS_PORT>/" /etc/apache2/sites-available/ojs-site.conf
-
 # Adding SSL keys and set access rights them
 COPY ssl/apache.crt /etc/apache2/ssl
 COPY ssl/apache.key /etc/apache2/ssl
-RUN chmod 600 -R /etc/apache2/ssl 
+RUN chmod 600 -R /etc/apache2/ssl
 
 RUN a2ensite ojs-site \
     && a2dissite 000-default \
@@ -96,20 +95,15 @@ RUN echo "#!/bin/sh\nif [ -s /etc/apache2/sites-available/ojs-ssl-site.conf ]; t
 RUN ln -sf /dev/stdout /var/log/apache2/access.log \
     && ln -sf /dev/stderr /var/log/apache2/error.log
 
-
 # configure git for Entrypoint script
 RUN git config --global url.https://.insteadOf git://
 RUN git config --global advice.detachedHead false
 
-
-# Adding OJS installation scripts and changing permissions
+# Add OJS installation scripts and change permissions
 COPY scripts/ojsInstall.exp /root/ojsInstall.exp
 RUN chmod +x /root/ojsInstall.exp
 
-# Entrypoint
 COPY ./docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE $OJS_PORT 443 3306 33060
-
-#CMD ["mysqld"]
