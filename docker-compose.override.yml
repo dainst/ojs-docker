@@ -12,4 +12,4 @@ services:
       - MYSQL_USER=ojs
       - MYSQL_PASSWORD=ojs
       - MYSQL_DB=ojs
-      - OJS_BRANCH="ojs-stable-3_1_1"
+      - OJS_BRANCH=ojs-stable-3_1_1
