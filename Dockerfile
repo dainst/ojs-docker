@@ -9,6 +9,12 @@ LABEL license="GNU GPL 3"
 ENV DEBIAN_FRONTEND noninteractive
 ENV OJS_PORT="8000"
 
+# Add MariaDB repo
+RUN apt-key adv --no-tty --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8
+RUN add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirrors.dotsrc.org/mariadb/repo/10.3/debian stretch main'
+# Add PHP repo
+RUN wget -q -O- https://packages.sury.org/php/apt.gpg | apt-key add -
+RUN echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
 
 RUN apt-get update && apt-get install -y \
     apt-transport-https \
@@ -20,17 +26,8 @@ RUN apt-get update && apt-get install -y \
     openssl \
     software-properties-common \
     wget \
-    apache2
-
-# Adding MariaDB repo and installing MariaDB 10.3
-RUN apt-key adv --no-tty --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8
-RUN add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirrors.dotsrc.org/mariadb/repo/10.3/debian stretch main'
-RUN apt-get update && apt-get install -y mariadb-server
-
-# Adding repo and installing PHP7.2 packages 
-RUN wget -q -O- https://packages.sury.org/php/apt.gpg | apt-key add -
-RUN echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
-RUN apt-get update && apt-get install -y \
+    apache2 \
+    mariadb-server \
     libapache2-mod-php \
     php7.2 \
     php7.2-bcmath \
@@ -46,12 +43,7 @@ RUN apt-get update && apt-get install -y \
     php7.2-mysql \
     php7.2-readline \
     php7.2-xml \
-    php7.2-zip
-
-WORKDIR /tmp
-
-# Update apt caches and install essentials
-RUN apt-get update && apt-get -y install \
+    php7.2-zip \
     acl \
     build-essential \
     cron \
@@ -59,11 +51,12 @@ RUN apt-get update && apt-get -y install \
     expect \
     git \
     imagemagick \
-    libssl-dev \ 
+    libssl-dev \
     nano \
     pdftk \
     supervisor \
-    unzip 
+    unzip
+
 WORKDIR /tmp
 
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
