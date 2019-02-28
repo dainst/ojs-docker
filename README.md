@@ -10,7 +10,13 @@ After the first startup, any container using the prepared volumes will start wit
 
 ## Versions
 
-The image is based on the official **debian:9.5-slim** image. **PHP 7.2** is manually installed via the official repositories. **MariaDB 10.3** is being installed via official repositories. **Apache 2.4.25** is being installed via the official repositories. **OJS 3.1.1** is tested and verified to run and is being cloned from the official [OJS](https://github.com/pkp/ojs) repository.
+The image is based on the official **debian:9.5-slim** image.
+The following packages are installed via official repositories:
+- PHP 7.2
+- MariaDB 10.3
+- Apache 2.4.25
+
+**OJS 3.1.1** is tested and verified to run and is being cloned from the official [OJS](https://github.com/pkp/ojs) repository.
 
 ## Configuration
 
