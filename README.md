@@ -32,65 +32,16 @@ All logs by default routed to _/dev/stdout_ and _/dev/stderr_. To inspect live u
 
 ## Usage
 
-Available scripts are _cbuild.sh_, _crun.sh_, _cstart.sh_ and _cstop.sh_. All scripts use **/bin/sh** and are therefore compatible with all POSIX-compatible OS.
+Managing the image is done by docker-compose.
 
-### cbuild
+Build the image with
+    docker-compose build
 
-`sh cbuild.sh [-d dockerID] [-n name] [-v version]`
+Start the container with
+    docker-compose up
 
-#### Description
-
-Builds the image from Dockerfile. If no parameters are given, default values are being used.
-
-#### Defaults
-
-- dockerID: _dainst_
-- name: _ojs3_
-- version: _1.0_
-
-### crun
-
-`sh crun.sh [-d DockerID] [-n name] [-v version] [-m mysql volume] [-a app volume] [-f files volume] [-c container name] [-s ssl port mapping] [-h http port mapping] [-aP adminPassword] [-aM adminMail] [-dU mysqlUser] [-dP mysqlPassword] [-dN mysqlDBName]`
-
-#### Description
-
-Runs the container based on the built image. If no parameters are given, default values are being used. It is **highly advised** to specify a different password! Adjust port mappings as suited.
-
-#### Defaults
-
-- dockerID: _dainst_
-- name: _ojs3_
-- version: _1.0_
-- mysql volume: _ojsdb_
-- app volume: _ojsapp_
-- files volume: _ojsfiles_
-- container name: _ojs3_
-- ssl port mapping: _8888_
-- http port mapping: _8080_
-
-### cstart
-
-`sh cstart.sh [-c container name]`
-
-#### Description
-
-Starts the existing container. If no parameter is specified, default value is being used.
-
-#### Defaults
-
-- container name: _ojs3_
-
-### cstop
-
-`sh cstop.sh [-c container name]`
-
-#### Description
-
-Stops the container if neccessary. If no parameter is specified, default value is being used.
-
-#### Defaults
-
-- container name: _ojs3_
+Stop the container by terminating the process (ctrl+C) or using
+    docker-compose stop
 
 ## License
 
