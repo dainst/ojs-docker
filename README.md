@@ -35,12 +35,15 @@ All logs by default routed to _/dev/stdout_ and _/dev/stderr_. To inspect live u
 Managing the image is done by docker-compose.
 
 Build the image with
+
     docker-compose build
 
 Start the container with
+
     docker-compose up
 
 Stop the container by terminating the process (ctrl+C) or using
+
     docker-compose stop
 
 ## License
