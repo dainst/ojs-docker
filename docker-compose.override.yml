@@ -9,7 +9,7 @@ services:
       - ADMIN_USER="admin"
       - ADMIN_PASSWORD="password"
       - ADMIN_EMAIL="dummy@address.local"
-      - MYSQL_USER="ojs"
-      - MYSQL_PASSWORD="ojs"
-      - MYSQL_DB="ojs"
+      - MYSQL_USER=ojs
+      - MYSQL_PASSWORD=ojs
+      - MYSQL_DB=ojs
       - OJS_BRANCH="ojs-stable-3_1_1"
