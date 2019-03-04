@@ -1,4 +1,4 @@
-FROM debian:9.5-slim
+FROM debian:9.7-slim
 
 LABEL maintainer="Deutsches Archäologisches Institut: dev@dainst.org"
 LABEL author="Dennis Twardy: kontakt@dennistwardy.com"
