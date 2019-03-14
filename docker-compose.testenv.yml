@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
   ojs3:
+    image: dainst/cilantro-ojs3
     environment:
       ADMIN_USER_FILE: /run/secrets/ojs_admin_user
       ADMIN_PASSWORD_FILE: /run/secrets/ojs_admin_password
@@ -19,6 +20,8 @@ services:
       - ojs_mysql_db
     networks:
       - web
+    ports:
+      - "4444:8000"
     deploy:
       labels:
         - "traefik.docker.network=web"
@@ -35,6 +38,15 @@ services:
         max-size: "10m"
         max-file: "3"
         mode: "non-blocking"
+    volumes:
+      - mysqlvolume:/var/lib/mysql
+      - appvolume:/var/www/html
+      - filesvolume:/var/www/ojsfiles
+
+volumes:
+  mysqlvolume:
+  appvolume:
+  filesvolume:
 
 secrets:
   ojs_admin_user:
