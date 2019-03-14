@@ -11,12 +11,12 @@ services:
       MYSQL_DB_FILE: /run/secrets/ojs_mysql_db
       OJS_BRANCH: "ojs-stable-3_1_1"
     secrets:
-      - admin_user
-      - admin_password
-      - admin_email
-      - mysql_user
-      - mysql_password
-      - mysql_db
+      - ojs_admin_user
+      - ojs_admin_password
+      - ojs_admin_email
+      - ojs_mysql_user
+      - ojs_mysql_password
+      - ojs_mysql_db
     networks:
       - web
     deploy:
