@@ -2,9 +2,6 @@ version: '3.7'
 
 services:
   ojs3:
-    #ports:
-      #- "4444:8000"
-      #- "443:443"
     environment:
       ADMIN_USER_FILE: /run/secrets/admin_user
       ADMIN_PASSWORD_FILE: /run/secrets/admin_password
@@ -21,13 +18,12 @@ services:
       - mysql_password
       - mysql_db
     networks:
-      - backend
-      - frontend
+      - web
     deploy:
       labels:
+        - "traefik.docker.network=web"
         - "traefik.enable=true"
         - "traefik.frontend.rule=Host:ojs.test.idai.world"
-        #- "traefik.frontend.rule=Host:ojs.localhost"
         - "traefik.passHostHeader=true"
         - "traefik.port=8000"
       restart_policy:
@@ -55,9 +51,6 @@ secrets:
     file: secrets/mysql_db.txt
 
 networks:
-  backend:
-    name: backend
-    external: true
   frontend:
-    name: frontend
+    name: web
     external: true
