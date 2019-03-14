@@ -3,12 +3,12 @@ version: '3.7'
 services:
   ojs3:
     environment:
-      ADMIN_USER_FILE: /run/secrets/admin_user
-      ADMIN_PASSWORD_FILE: /run/secrets/admin_password
-      ADMIN_EMAIL_FILE: /run/secrets/admin_email
-      MYSQL_USER_FILE: /run/secrets/mysql_user
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
-      MYSQL_DB_FILE: /run/secrets/mysql_db
+      ADMIN_USER_FILE: /run/secrets/ojs_admin_user
+      ADMIN_PASSWORD_FILE: /run/secrets/ojs_admin_password
+      ADMIN_EMAIL_FILE: /run/secrets/ojs_admin_email
+      MYSQL_USER_FILE: /run/secrets/ojs_mysql_user
+      MYSQL_PASSWORD_FILE: /run/secrets/ojs_mysql_password
+      MYSQL_DB_FILE: /run/secrets/ojs_mysql_db
       OJS_BRANCH: "ojs-stable-3_1_1"
     secrets:
       - admin_user
@@ -37,20 +37,20 @@ services:
         mode: "non-blocking"
 
 secrets:
-  admin_user:
-    file: secrets/admin_user.txt
-  admin_password:
-    file: secrets/admin_password.txt
-  admin_email:
-    file: secrets/admin_email.txt
-  mysql_user:
-    file: secrets/mysql_user.txt
-  mysql_password:
-    file: secrets/mysql_password.txt
-  mysql_db:
-    file: secrets/mysql_db.txt
+  ojs_admin_user:
+    external: true
+  ojs_admin_password:
+    external: true
+  ojs_admin_email:
+    external: true
+  ojs_mysql_user:
+    external: true
+  ojs_mysql_password:
+    external: true
+  ojs_mysql_db:
+    external: true
 
 networks:
-  frontend:
+  web:
     name: web
     external: true
