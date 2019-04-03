@@ -63,13 +63,10 @@ RUN apt-get update && apt-get install -y \
     acl \
     build-essential \
     cron \
-    exiftool \
     expect \
     git \
-    imagemagick \
     libssl-dev \
     nano \
-    pdftk \
     supervisor \
     unzip
 
@@ -89,9 +86,11 @@ COPY conf/ojs-apache.conf /etc/apache2/conf-available
 COPY conf/ojs-ssl-site.conf /etc/apache2/sites-available
 COPY conf/ojs-site.conf /etc/apache2/sites-available
 COPY conf/.htpasswd /etc/apache2/
+
 # Ports
 RUN sed -i "s/^Listen 80.*\$/Listen $OJS_PORT/" /etc/apache2/ports.conf
 RUN sed -i "s/^<VirtualHost \*:80>.*\$/<VirtualHost \*:$OJS_PORT>/" /etc/apache2/sites-available/ojs-site.conf
+
 # Adding SSL keys and set access rights them
 COPY ssl/apache.crt /etc/apache2/ssl
 COPY ssl/apache.key /etc/apache2/ssl
@@ -104,7 +103,7 @@ RUN echo "#!/bin/sh\nif [ -s /etc/apache2/sites-available/ojs-ssl-site.conf ]; t
 RUN ln -sf /dev/stdout /var/log/apache2/access.log \
     && ln -sf /dev/stderr /var/log/apache2/error.log
 
-# configure git for Entrypoint script
+# configure git
 RUN git config --global url.https://.insteadOf git://
 RUN git config --global advice.detachedHead false
 
@@ -119,8 +118,8 @@ RUN service mysql start && \
     echo "CREATE DATABASE ${MYSQL_DB};" | mysql -u root && \
     echo "GRANT ALL PRIVILEGES on ${MYSQL_DB}.* TO '${MYSQL_USER}'@'localhost'; FLUSH PRIVILEGES;" | mysql -u root
 
-### Initialize OJS repo ###
-RUN mkdir -p /var/www/ojsfiles
+### Install OJS ###
+RUN mkdir -p /var/www/ompfiles
 WORKDIR /var/www/html
 RUN rm index.html
 RUN git init && \
@@ -129,14 +128,19 @@ RUN git init && \
     git checkout --track origin/${OJS_BRANCH}
 RUN git submodule update --init --recursive
 
+# php modules
 RUN composer install -v -d lib/pkp --no-dev
 RUN composer install -v -d plugins/paymethod/paypal --no-dev
 RUN composer install -v -d plugins/generic/citationStyleLanguage --no-dev
 
+# js modules
 RUN npm install -y
 RUN npm run build
 
+# config file
 RUN cp config.TEMPLATE.inc.php config.inc.php
+
+# initial file rights
 WORKDIR /var
 RUN chgrp -f -R www-data www && \
     chmod -R 771 www && \
@@ -144,45 +148,59 @@ RUN chgrp -f -R www-data www && \
     setfacl -Rm o::x,d:o::x www && \
     setfacl -Rm g::rwx,d:g::rwx www
 
-### Install OJS ###
+# run installer
 WORKDIR /var/www
-RUN service mysql start && expect /root/ojsInstall.exp ${ADMIN_USER} ${ADMIN_PASSWORD} ${ADMIN_EMAIL} ${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_DB}
-RUN git clone https://github.com/dainst/ojs-config-tool ojsconfig
-WORKDIR html/plugins
-RUN git clone --single-branch -b ${OJS_BRANCH} https://github.com/asmecher/texture generic/texture
-RUN git submodule update --init --recursive
-RUN chgrp -f -R www-data generic/texture && \
-    chmod -R 771 generic/texture && \
-    chmod g+s generic/texture && \
-    setfacl -Rm o::x,d:o::x generic/texture && \
-    setfacl -Rm g::rwx,d:g::rwx generic/texture
-RUN service mysql start && php /var/www/ojsconfig/ojs3.php
+RUN service mysql start && \
+    expect /root/ojsInstall.exp ${ADMIN_USER} ${ADMIN_PASSWORD} ${ADMIN_EMAIL} ${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_DB}
 
-# Install OJS Plugins
+### Install OJS Plugins ###
 WORKDIR /var/www/html/plugins
-RUN git clone -b ojs3 https://github.com/dainst/ojs-cilantro-plugin.git generic/ojs-cilantro-plugin
-# RUN git clone https://github.com/dainst/ojs-dainst-zenonlink-plugin.git pubIds/zenon  # TODO comment-in when actually available
+RUN git clone -b ojs3 https://github.com/dainst/ojs-cilantro-plugin.git generic/ojs-cilantro-plugin && \
+    cd generic/ojs-cilantro-plugin && \
+    git submodule update --init --recursive
+#RUN git clone -b ojs3 https://github.com/dainst/ojs-zenon-plugin.git pubIds/zenon
+COPY ojs-zenon-plugin pubIds/zenon
 RUN git clone -b ojs3 https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
-RUN git submodule update --init --recursive
+#RUN git clone https://github.com/dainst/ojs-dainst-theme themes/ojs-dainst-theme && \
+#    cd themes/ojs-dainst-theme && \
+#    git submodule update --init --recursive
+RUN git clone --single-branch -b ${OJS_BRANCH} https://github.com/asmecher/texture generic/texture && \
+    git submodule update --init --recursive
 
-WORKDIR /var/www/html/
-RUN chgrp -f -R www-data plugins && \
-    chmod -R 771 plugins && \
-    chmod g+s plugins && \
-    setfacl -Rm o::x,d:o::x plugins && \
-    setfacl -Rm g::rwx,d:g::rwx plugins
-
-RUN mkdir /var/www/tmp
-RUN echo "[dainst]\ntmpPath = /var/www/tmp" >> /var/www/html/config.inc.php
+### configurate OJS ###
 WORKDIR /var/www
-RUN chgrp -f -R www-data tmp && \
-    chmod -R 771 tmp && \
-    chmod g+s tmp && \
-    setfacl -Rm o::x,d:o::x tmp && \
-    setfacl -Rm g::rwx,d:g::rwx tmp
-
+RUN git clone https://github.com/dainst/ojs-config-tool ojsconfig
+#RUN service mysql start && \
+#    php /var/www/ojsconfig/ojs3.php --press.theme=ojs-dainst-theme --theme=ojs-dainst-theme --press.plugins=themes/ojs-dainst-theme
 RUN sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
 
+# set file rights (after configuration and installation!)
+WORKDIR /var/www/
+RUN chgrp -f -R www-data html/plugins && \
+    chmod -R 771 html/plugins && \
+    chmod g+s html/plugins && \
+    setfacl -Rm o::x,d:o::x html/plugins && \
+    setfacl -Rm g::rwx,d:g::rwx html/plugins
+
+RUN chgrp -f -R www-data html/cache && \
+    chmod -R 771 html/cache && \
+    chmod g+s html/cache && \
+    setfacl -Rm o::x,d:o::x html/cache && \
+    setfacl -Rm g::rwx,d:g::rwx html/cache
+
+RUN chgrp -f -R www-data html/public && \
+    chmod -R 771 html/public && \
+    chmod g+s html/public && \
+    setfacl -Rm o::x,d:o::x html/public && \
+    setfacl -Rm g::rwx,d:g::rwx html/public
+
+RUN chgrp -f -R www-data ojsfiles && \
+    chmod -R 771 ojsfiles && \
+    chmod g+s ojsfiles && \
+    setfacl -Rm o::x,d:o::x ojsfiles && \
+    setfacl -Rm g::rwx,d:g::rwx ojsfiles
+
+### go ###
 COPY ./docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
