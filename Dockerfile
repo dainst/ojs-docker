@@ -119,7 +119,7 @@ RUN service mysql start && \
     echo "GRANT ALL PRIVILEGES on ${MYSQL_DB}.* TO '${MYSQL_USER}'@'localhost'; FLUSH PRIVILEGES;" | mysql -u root
 
 ### Install OJS ###
-RUN mkdir -p /var/www/ompfiles
+RUN mkdir -p /var/www/ojsfiles
 WORKDIR /var/www/html
 RUN rm index.html
 RUN git init && \
@@ -158,20 +158,19 @@ WORKDIR /var/www/html/plugins
 RUN git clone -b ojs3 https://github.com/dainst/ojs-cilantro-plugin.git generic/ojs-cilantro-plugin && \
     cd generic/ojs-cilantro-plugin && \
     git submodule update --init --recursive
-#RUN git clone -b ojs3 https://github.com/dainst/ojs-zenon-plugin.git pubIds/zenon
-COPY ojs-zenon-plugin pubIds/zenon
+RUN git clone -b ojs3 https://github.com/dainst/ojs-zenon-plugin.git pubIds/zenon
 RUN git clone -b ojs3 https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
-#RUN git clone https://github.com/dainst/ojs-dainst-theme themes/ojs-dainst-theme && \
-#    cd themes/ojs-dainst-theme && \
-#    git submodule update --init --recursive
+RUN git clone -b ojs3 https://github.com/dainst/ojs-dainst-theme themes/ojs-dainst-theme && \
+    cd themes/ojs-dainst-theme && \
+    git submodule update --init --recursive
 RUN git clone --single-branch -b ${OJS_BRANCH} https://github.com/asmecher/texture generic/texture && \
     git submodule update --init --recursive
 
 ### configurate OJS ###
 WORKDIR /var/www
 RUN git clone https://github.com/dainst/ojs-config-tool ojsconfig
-#RUN service mysql start && \
-#    php /var/www/ojsconfig/ojs3.php --press.theme=ojs-dainst-theme --theme=ojs-dainst-theme --press.plugins=themes/ojs-dainst-theme
+RUN service mysql start && \
+    php /var/www/ojsconfig/ojs3.php --journal.theme=ojs-dainst-theme --theme=ojs-dainst-theme --journal.plugins=themes/ojs-dainst-theme
 RUN sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
 
 # set file rights (after configuration and installation!)
