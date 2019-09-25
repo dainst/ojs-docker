@@ -94,6 +94,8 @@ RUN git clone --single-branch -b ${OJS_BRANCH} https://github.com/asmecher/textu
 WORKDIR /var/www
 RUN git clone https://github.com/dainst/ojs-config-tool ojsconfig
 
+RUN a2enmod rewrite
+
 COPY conf/config.TEMPLATE.inc.php html/config.TEMPLATE.inc.php
 
 COPY ./docker-entrypoint.sh /usr/local/bin/
