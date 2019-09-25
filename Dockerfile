@@ -18,6 +18,7 @@ ARG ADMIN_PASSWORD
 ARG ADMIN_EMAIL
 
 RUN apt-get update && apt-get -y install \
+    default-mysql-client \
     git \
     expect \
     libbz2-dev \

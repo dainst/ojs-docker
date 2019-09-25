@@ -17,7 +17,7 @@ services:
       context: .
       args:
         OJS_BRANCH: stable-3_1_2
-    image: dainst/cilantro-ojs3
+    image: dainst/ojs3
     ports:
       - "4445:80"
     environment:
