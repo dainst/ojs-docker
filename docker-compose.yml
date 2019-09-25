@@ -1,27 +1,34 @@
 version: '3.7'
 
-x-env: &env
-  MYSQL_USER: ojs
-  MYSQL_PASSWORD: ojs
-  MYSQL_DB: ojs
-  OJS_BRANCH: stable-3_1_2
-  ADMIN_USER: admin
-  ADMIN_PASSWORD: password
-  ADMIN_EMAIL: dummy@address.local
-
 services:
+
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ojs
+      MYSQL_USER: ojs
+      MYSQL_PASSWORD: ojs
+      MYSQL_DATABASE: ojs
+    volumes:
+      - mysqlvolume:/var/lib/mysql
+
   ojs3:
     build:
       context: .
       args:
-        <<: *env
+        OJS_BRANCH: stable-3_1_2
     image: dainst/cilantro-ojs3
     ports:
-      - "4444:8000"
+      - "4445:80"
     environment:
-      <<: *env
+      ADMIN_USER: admin
+      ADMIN_PASSWORD: password
+      ADMIN_EMAIL: dummy@address.local
+      MYSQL_HOST: db
+      MYSQL_USER: ojs
+      MYSQL_PASSWORD: ojs
+      MYSQL_DATABASE: ojs
     volumes:
-      - mysqlvolume:/var/lib/mysql
       - appvolume:/var/www/html
       - filesvolume:/var/www/ojsfiles
 

@@ -7,6 +7,7 @@ set adminMail [lindex $argv 2]
 set dbUser [lindex $argv 3]
 set dbPWd [lindex $argv 4]
 set dbName [lindex $argv 5]
+set dbHost [lindex $argv 6]
 
 spawn php  /var/www/html/tools/install.php install
 
@@ -44,7 +45,7 @@ expect "Select: "
 send -- "mysqli\n"
 
 expect "Host (None): "
-send -- "localhost\n"
+send -- "$dbHost\n"
 
 expect "Username (None): "
 send -- $dbUser\n
