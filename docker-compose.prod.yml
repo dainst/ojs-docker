@@ -1,0 +1,61 @@
+version: '3.7'
+
+services:
+  db:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/ojs_mysql_root_password
+      MYSQL_USER: ojs
+      MYSQL_PASSWORD_FILE: /run/secrets/ojs_mysql_password
+      MYSQL_DATABASE: ojs
+    secrets:
+      - ojs_mysql_root_password
+      - ojs_mysql_password
+    volumes:
+      - mysqlvolume:/var/lib/mysql
+
+
+  ojs3:
+    image: dainst/ojs3
+    environment:
+      ADMIN_USER: admin
+      ADMIN_PASSWORD_FILE: /run/secrets/ojs_admin_password
+      ADMIN_EMAIL: dev@dainst.de
+      MYSQL_HOST: "db"
+      MYSQL_USER: ojs
+      MYSQL_PASSWORD_FILE: /run/secrets/ojs_mysql_password
+      MYSQL_DATABASE: ojs
+      OJS_BRANCH: "ojs-stable-3_1_1"
+    secrets:
+      - ojs_admin_password
+      - ojs_mysql_password
+    volumes:
+      - appvolume:/var/www/html
+      - filesvolume:/var/www/ojsfiles
+    networks:
+      - default
+      - web
+    deploy:
+      labels:
+        - "traefik.docker.network=web"
+        - "traefik.enable=true"
+        - "traefik.frontend.rule=Host:ojs.idai.world"
+        - "traefik.port=80"
+
+volumes:
+  mysqlvolume:
+  appvolume:
+  filesvolume:
+
+secrets:
+  ojs_admin_password:
+    external: true
+  ojs_mysql_password:
+    external: true
+  ojs_mysql_root_password:
+    external: true
+
+networks:
+  web:
+    name: web
+    external: true
