@@ -5,6 +5,42 @@ while ! mysqladmin ping -h"$MYSQL_HOST" --silent; do
     sleep 1
 done
 
+file_env() {
+	local var="$1"
+	local fileVar="${var}_FILE"
+	local def="${2:-}"
+	if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
+		echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+		exit 1
+	fi
+	local val="$def"
+	if [ "${!var:-}" ]; then
+		val="${!var}"
+	elif [ "${!fileVar:-}" ]; then
+		val="$(< "${!fileVar}")"
+	fi
+	export "$var"="$val"
+	unset "$fileVar"
+}
+
+envs=(
+		ADMIN_USER
+		ADMIN_PASSWORD
+		ADMIN_EMAIL
+		MYSQL_USER
+		MYSQL_PASSWORD
+		MYSQL_DATABASE
+		MYSQL_HOST
+	)
+
+for e in "${envs[@]}"; do
+		file_env "$e"
+		if [ -z "$haveConfig" ] && [ -n "${!e}" ]; then
+			haveConfig=1
+		fi
+	done
+
+
 if [ ! -f /var/www/html/config.inc.php ]; then
     echo "config.inc.php does not exist. starting installation ..."
 
