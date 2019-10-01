@@ -4,3 +4,4 @@ admin_email.txt
 mysql_user.txt
 mysql_password.txt
 mysql_db.txt
+.env

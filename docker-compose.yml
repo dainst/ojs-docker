@@ -7,7 +7,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ojs
       MYSQL_USER: ojs
-      MYSQL_PASSWORD: ojs
+      MYSQL_PASSWORD: ${OJS_MYSQL_PASSWORD}
       MYSQL_DATABASE: ojs
     volumes:
       - mysqlvolume:/var/lib/mysql
@@ -22,11 +22,11 @@ services:
       - "4445:80"
     environment:
       ADMIN_USER: admin
-      ADMIN_PASSWORD: password
+      ADMIN_PASSWORD: ${OJS_ADMIN_PASSWORD}
       ADMIN_EMAIL: dummy@address.local
       MYSQL_HOST: db
       MYSQL_USER: ojs
-      MYSQL_PASSWORD: ojs
+      MYSQL_PASSWORD: ${OJS_MYSQL_PASSWORD}
       MYSQL_DATABASE: ojs
     volumes:
       - appvolume:/var/www/html
