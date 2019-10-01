@@ -34,11 +34,8 @@ envs=(
 	)
 
 for e in "${envs[@]}"; do
-		file_env "$e"
-		if [ -z "$haveConfig" ] && [ -n "${!e}" ]; then
-			haveConfig=1
-		fi
-	done
+	file_env "$e"
+done
 
 
 if [ ! -f /var/www/html/config.inc.php ]; then
