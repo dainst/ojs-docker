@@ -5,7 +5,7 @@ services:
   db:
     image: mariadb:latest
     environment:
-      MYSQL_ROOT_PASSWORD: ojs
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_USER: ojs
       MYSQL_PASSWORD: ${OJS_MYSQL_PASSWORD}
       MYSQL_DATABASE: ojs
