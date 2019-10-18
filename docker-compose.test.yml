@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+
+    db:
+      image: mariadb:latest
+      environment:
+        MYSQL_ROOT_PASSWORD: ojs
+        MYSQL_USER: ojs
+        MYSQL_PASSWORD: ojs
+        MYSQL_DATABASE: ojs
+      volumes:
+        - mysqlvolume:/var/lib/mysql
+
+    ojs3:
+      image: dainst/ojs3
+      environment:
+        ADMIN_USER: admin
+        ADMIN_PASSWORD_FILE: /run/secrets/ojs_admin_password
+        ADMIN_EMAIL: dummy@address.local
+        MYSQL_HOST: db
+        MYSQL_USER: ojs
+        MYSQL_PASSWORD: ojs
+        MYSQL_DATABASE: ojs
+      volumes:
+        - appvolume:/var/www/html
+        - filesvolume:/var/www/ojsfiles
+      networks:
+        - default
+        - web
+      deploy:
+        labels:
+          - "traefik.docker.network=web"
+          - "traefik.enable=true"
+          - "traefik.frontend.rule=Host:ojs.test.idai.world"
+          - "traefik.port=80"
+
+volumes:
+  mysqlvolume:
+  appvolume:
+  filesvolume:
+
+secrets:
+  ojs_admin_password:
+    external: true
+
+networks:
+  web:
+    name: web
+    external: true
