@@ -80,14 +80,6 @@ RUN chgrp -f -R www-data www && \
 
 ### Install OJS Plugins ###
 WORKDIR /var/www/html/plugins
-RUN git clone -b ojs3 https://github.com/dainst/ojs-cilantro-plugin.git generic/ojs-cilantro-plugin && \
-    cd generic/ojs-cilantro-plugin && \
-    git submodule update --init --recursive
-RUN git clone -b ojs3 https://github.com/dainst/ojs-zenon-plugin.git pubIds/zenon
-RUN git clone -b ojs3 https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
-RUN git clone -b ojs3 https://github.com/dainst/ojs-dainst-theme themes/ojs-dainst-theme && \
-    cd themes/ojs-dainst-theme && \
-    git submodule update --init --recursive
 RUN git clone --single-branch -b ${OJS_BRANCH} https://github.com/asmecher/texture generic/texture && \
     git submodule update --init --recursive
 
