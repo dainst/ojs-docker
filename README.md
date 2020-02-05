@@ -1,4 +1,4 @@
-# ojs3_dainst-docker
+# ojs3-docker
 
 ## Description
 
