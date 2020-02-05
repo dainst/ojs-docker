@@ -80,8 +80,7 @@ RUN chgrp -f -R www-data www && \
 
 ### Install OJS Plugins ###
 WORKDIR /var/www/html/plugins
-RUN git clone --single-branch -b ${OJS_BRANCH} https://github.com/asmecher/texture generic/texture && \
-    git submodule update --init --recursive
+RUN git clone --single-branch -b ${OJS_BRANCH} https://github.com/asmecher/texture generic/texture
 
 WORKDIR /var/www
 RUN git clone https://github.com/dainst/ojs-config-tool ojsconfig
