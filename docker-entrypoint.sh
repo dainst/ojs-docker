@@ -2,7 +2,7 @@
 
 while ! mysqladmin ping -h"$MYSQL_HOST" --silent; do
     echo "Waiting for database connection..."
-    sleep 1
+    sleep 5
 done
 
 if [ ! -f /var/www/html/config.inc.php ]; then
