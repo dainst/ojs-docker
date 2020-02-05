@@ -1,0 +1,1 @@
+Put your OJS backup SQL file here and adjust the [docker-compose.yml](../docker-compose.yml).

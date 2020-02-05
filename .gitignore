@@ -5,3 +5,5 @@ mysql_user.txt
 mysql_password.txt
 mysql_db.txt
 .env
+
+mariadb_data/*sql
