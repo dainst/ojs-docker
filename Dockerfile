@@ -9,9 +9,6 @@ LABEL license="GNU GPL 3"
 ENV DEBIAN_FRONTEND noninteractive
 ENV OJS_PORT="8000"
 
-ARG OJS_BRANCH
-ARG MYSQL_PASSWORD
-
 RUN apt-get update && apt-get -y install \
     default-mysql-client \
     git \
@@ -55,6 +52,8 @@ RUN chmod +x /root/ojsInstall.exp
 ### Install OJS ###
 RUN mkdir -p /var/www/ojsfiles
 WORKDIR /var/www/html
+
+ARG OJS_BRANCH
 RUN git clone https://github.com/pkp/ojs.git -b ${OJS_BRANCH} .
 RUN git submodule update --init --recursive
 
@@ -78,6 +77,7 @@ WORKDIR /var/www
 RUN a2enmod rewrite
 
 COPY conf/config.TEMPLATE.inc.php html/config.TEMPLATE.inc.php
+ARG MYSQL_PASSWORD
 RUN sed -i "s|password = ojs|password = $MYSQL_PASSWORD|g" html/config.TEMPLATE.inc.php 
 
 COPY ./docker-entrypoint.sh /usr/local/bin/

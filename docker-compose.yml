@@ -17,7 +17,7 @@ services:
     build:
       context: .
       args:
-        OJS_BRANCH: stable-3_1_2
+        OJS_BRANCH: ojs-3_1_2-4
         MYSQL_PASSWORD: ${OJS_MYSQL_PASSWORD}
     image: dainst/ojs3
     ports:
