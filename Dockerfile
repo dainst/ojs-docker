@@ -9,13 +9,8 @@ LABEL license="GNU GPL 3"
 ENV DEBIAN_FRONTEND noninteractive
 ENV OJS_PORT="8000"
 
-ARG MYSQL_USER
-ARG MYSQL_PASSWORD
-ARG MYSQL_DATABASE
 ARG OJS_BRANCH
-ARG ADMIN_USER
-ARG ADMIN_PASSWORD
-ARG ADMIN_EMAIL
+ARG MYSQL_PASSWORD
 
 RUN apt-get update && apt-get -y install \
     default-mysql-client \
@@ -83,6 +78,7 @@ WORKDIR /var/www
 RUN a2enmod rewrite
 
 COPY conf/config.TEMPLATE.inc.php html/config.TEMPLATE.inc.php
+RUN sed -i "s|password = ojs|password = $MYSQL_PASSWORD|g" html/config.TEMPLATE.inc.php 
 
 COPY ./docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]

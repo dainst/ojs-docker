@@ -18,17 +18,12 @@ services:
       context: .
       args:
         OJS_BRANCH: stable-3_1_2
+        MYSQL_PASSWORD: ${OJS_MYSQL_PASSWORD}
     image: dainst/ojs3
     ports:
       - "4445:80"
     environment:
-      ADMIN_USER: admin
-      ADMIN_PASSWORD: ${OJS_ADMIN_PASSWORD}
-      ADMIN_EMAIL: dummy@address.local
       MYSQL_HOST: db
-      MYSQL_USER: ojs
-      MYSQL_PASSWORD: ${OJS_MYSQL_PASSWORD}
-      MYSQL_DATABASE: ojs
     volumes:
       - ./ojs-cilantro-plugin:/var/www/html/plugins/generic/ojs-cilantro-plugin
       - ./ojs-zenon-plugin:/var/www/html/plugins/pubIds/zenon
