@@ -78,10 +78,6 @@ RUN chgrp -f -R www-data www && \
     chmod -R 771 www && \
     chmod g+s www
 
-### Install OJS Plugins ###
-# WORKDIR /var/www/html/plugins
-# RUN git clone --single-branch -b ${OJS_BRANCH} https://github.com/asmecher/texture generic/texture
-
 WORKDIR /var/www
 
 RUN a2enmod rewrite
