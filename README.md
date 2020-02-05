@@ -23,6 +23,10 @@ Configuration files can be found in the _conf folder_.
 
 ## Usage
 
+Initialize submodules by running
+
+    git submodule update --init --recursive
+
 Managing the image is done by docker-compose.
 
 Build the image with
