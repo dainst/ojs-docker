@@ -9,6 +9,8 @@ services:
       MYSQL_USER: ojs
       MYSQL_PASSWORD: ${OJS_MYSQL_PASSWORD}
       MYSQL_DATABASE: ojs
+    ports:
+      - "4306:3306"
     volumes:
       - mysqlvolume:/var/lib/mysql
       - ./mariadb_data/ojs_3.1.2.4_mysql.sql:/docker-entrypoint-initdb.d/dump.sql
