@@ -13,7 +13,7 @@ services:
       - "4306:3306"
     volumes:
       - mysqlvolume:/var/lib/mysql
-      - ./mariadb_data/ojs_3.1.2.4_mysql.sql:/docker-entrypoint-initdb.d/dump.sql
+      - ./mariadb_data/ojs3_dev.sql:/docker-entrypoint-initdb.d/ojs3_dev.sql
 
   ojs3:
     build:
