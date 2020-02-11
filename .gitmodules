@@ -7,3 +7,6 @@
 [submodule "ojs-cilantro-plugin"]
 	path = ojs-cilantro-plugin
 	url = https://github.com/dainst/ojs-cilantro-plugin.git
+[submodule "ojs3_theme"]
+	path = ojs3_theme
+	url = https://github.com/dainst/ojs3_theme.git

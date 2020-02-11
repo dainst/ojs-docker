@@ -12,8 +12,11 @@ if [ ! -f /var/www/html/config.inc.php ]; then
 	sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
 fi
 
-cd /var/www/
+if [[ !(-L /var/www/html/public/idai && -d /var/www/html/public/idai) ]]; then
+    ln -s /var/www/html/plugins/themes/idaitheme/idai/ /var/www/html/public/idai
+fi
 
+cd /var/www/
 chgrp -f -R www-data html/plugins && \
 chmod -R 771 html/plugins && \
 chmod g+s html/plugins
