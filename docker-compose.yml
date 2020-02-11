@@ -30,7 +30,6 @@ services:
       - ./ojs-cilantro-plugin:/var/www/html/plugins/generic/ojs-cilantro-plugin
       - ./ojs-zenon-plugin:/var/www/html/plugins/pubIds/zenon
       - ./epicur:/var/www/html/plugins/oaiMetadataFormats/epicur
-      - ./ojs-dainst-theme:/var/www/html/plugins/themes/ojs-dainst-theme
 
 volumes:
   mysqlvolume:
