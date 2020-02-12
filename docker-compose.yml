@@ -26,6 +26,7 @@ services:
       - "4445:80"
     environment:
       MYSQL_HOST: db
+      XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
     volumes:
       - ./ojs-cilantro-plugin:/var/www/html/plugins/generic/ojs-cilantro-plugin
       - ./ojs-zenon-plugin:/var/www/html/plugins/pubIds/zenon
