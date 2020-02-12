@@ -210,13 +210,13 @@ database_charset = Off
 ; Complete path to directory to store uploaded files
 ; (This directory should not be directly web-accessible)
 ; Windows users should use forward slashes
-files_dir = files
+files_dir = /data/files
 
 ; Path to the directory to store public uploaded files
 ; (This directory should be web-accessible and the specified path
 ; should be relative to the base OJS directory)
 ; Windows users should use forward slashes
-public_files_dir = public
+public_files_dir = /data/public
 
 ; Permissions mask for created files and directories
 umask = 0022

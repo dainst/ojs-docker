@@ -65,6 +65,12 @@ COPY conf/config.TEMPLATE.inc.php  /tmp/config.TEMPLATE.inc.php
 ARG MYSQL_PASSWORD
 RUN sed -i "s|password = ojs|password = $MYSQL_PASSWORD|g" /tmp/config.TEMPLATE.inc.php
 
+RUN mkdir -p /data/cache
+RUN mkdir -p /data/files
+RUN mkdir -p /data/cache
+
+RUN chown -R www-data:www-data /data
+
 COPY ./docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
