@@ -1,12 +1,3 @@
-[submodule "ojs-zenon-plugin"]
-	path = ojs-zenon-plugin
-	url = https://github.com/dainst/ojs-zenon-plugin.git
-[submodule "epicur"]
-	path = epicur
-	url = https://github.com/dainst/epicur.git
-[submodule "ojs-cilantro-plugin"]
-	path = ojs-cilantro-plugin
-	url = https://github.com/dainst/ojs-cilantro-plugin.git
-[submodule "ojs3_theme"]
-	path = ojs3_theme
-	url = https://github.com/dainst/ojs3_theme.git
+[submodule "ojs"]
+	path = ojs
+	url = https://github.com/dainst/ojs
