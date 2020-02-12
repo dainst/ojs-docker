@@ -49,22 +49,9 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY scripts/ojsInstall.exp /root/ojsInstall.exp
 RUN chmod +x /root/ojsInstall.exp
 
-### Install OJS ###
+### Prepare OJS installation ###
 RUN mkdir -p /var/www/ojsfiles
 WORKDIR /var/www/html
-
-ARG OJS_BRANCH
-RUN git clone https://github.com/pkp/ojs.git -b ${OJS_BRANCH} .
-RUN git submodule update --init --recursive
-
-# php modules
-RUN composer install -v -d lib/pkp --no-dev
-RUN composer install -v -d plugins/paymethod/paypal --no-dev
-RUN composer install -v -d plugins/generic/citationStyleLanguage --no-dev
-
-# js modules
-RUN npm install -y
-RUN npm run build
 
 # initial file rights
 WORKDIR /var
@@ -72,14 +59,11 @@ RUN chgrp -f -R www-data www && \
     chmod -R 771 www && \
     chmod g+s www
 
-WORKDIR /var/www/html/plugins/importexport
-RUN git clone https://github.com/pkp/quickSubmit -b v1.0.4-1
-
 RUN a2enmod rewrite
 
-COPY conf/config.TEMPLATE.inc.php  /var/www/html/config.TEMPLATE.inc.php
+COPY conf/config.TEMPLATE.inc.php  /tmp/config.TEMPLATE.inc.php
 ARG MYSQL_PASSWORD
-RUN sed -i "s|password = ojs|password = $MYSQL_PASSWORD|g" /var/www/html/config.TEMPLATE.inc.php 
+RUN sed -i "s|password = ojs|password = $MYSQL_PASSWORD|g" /tmp/config.TEMPLATE.inc.php
 
 COPY ./docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]

@@ -19,7 +19,6 @@ services:
     build:
       context: .
       args:
-        OJS_BRANCH: ojs-3_1_2-4
         MYSQL_PASSWORD: ${OJS_MYSQL_PASSWORD}
     image: dainst/ojs3
     ports:
@@ -28,10 +27,7 @@ services:
       MYSQL_HOST: db
       XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
     volumes:
-      - ./ojs-cilantro-plugin:/var/www/html/plugins/generic/ojs-cilantro-plugin
-      - ./ojs-zenon-plugin:/var/www/html/plugins/pubIds/zenon
-      - ./epicur:/var/www/html/plugins/oaiMetadataFormats/epicur
-      - ./ojs3_theme:/var/www/html/plugins/themes/idaitheme
+      - ./ojs:/var/www/html
 
 volumes:
   mysqlvolume:

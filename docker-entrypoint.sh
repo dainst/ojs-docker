@@ -7,30 +7,21 @@ done
 
 if [ ! -f /var/www/html/config.inc.php ]; then
     echo "config.inc.php does not exist. starting installation ..."
+    
+    cd /var/www/html
 
-    cp /var/www/html/config.TEMPLATE.inc.php /var/www/html/config.inc.php
+    # js modules
+    npm install -y
+    npm run build
+
+    # php modules
+    composer install -v -d lib/pkp --no-dev
+    composer install -v -d plugins/paymethod/paypal --no-dev
+    composer install -v -d plugins/generic/citationStyleLanguage --no-dev
+
+    # configuration
+    cp /tmp/config.TEMPLATE.inc.php /var/www/html/config.inc.php
 	sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
 fi
-
-if [[ !(-L /var/www/html/public/idai && -d /var/www/html/public/idai) ]]; then
-    ln -s /var/www/html/plugins/themes/idaitheme/idai/ /var/www/html/public/idai
-fi
-
-cd /var/www/
-chgrp -f -R www-data html/plugins && \
-chmod -R 771 html/plugins && \
-chmod g+s html/plugins
-
-chgrp -f -R www-data html/cache && \
-chmod -R 771 html/cache && \
-chmod g+s html/cache
-
-chgrp -f -R www-data html/public && \
-chmod -R 771 html/public && \
-chmod g+s html/public
-
-chgrp -f -R www-data ojsfiles && \
-chmod -R 771 ojsfiles && \
-chmod g+s ojsfiles
 
 apachectl -DFOREGROUND
