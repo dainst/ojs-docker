@@ -34,6 +34,9 @@ RUN docker-php-ext-install \
     xml \
     zip
 
+RUN pecl install xdebug-2.8.1 \
+    && docker-php-ext-enable xdebug
+
 WORKDIR /tmp
 
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
