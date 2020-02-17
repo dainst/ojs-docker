@@ -71,9 +71,6 @@ You need to add the pathMappings, and adjust the path to your lokal folder.
 
 ```json
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -94,7 +91,8 @@ You need to add the pathMappings, and adjust the path to your lokal folder.
             "port": 9000
         }
     ]
-}```
+}
+```
 
 Now you can start a debug session. Navigate to the debug tab on the right side of your screen and hit the small run symbol in your upper part of the righthand column.
 
