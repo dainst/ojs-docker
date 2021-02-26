@@ -2,7 +2,7 @@
 
 ## Description
 
-This repository offers a fully dockerized version of [PKP's](https://pkp.sfu.ca/) OJS 3 in addition to a set of DAI specific plugins. The repository offers easy to use shell scripts to help with handling Docker. By default all data will be encapsuled in Docker Volumes and can therefore be used in multiple instances of the container. OJS3 code will be fetched via github when building the image.
+This repository offers a fully dockerized version of [PKP's](https://pkp.sfu.ca/) OJS 3 in addition to a set of DAI specific plugins. The repository offers easy to use shell scripts to help with handling Docker. By default all data will be encapsuled in Docker Volumes and can therefore be used in multiple instances of the container.
 
 **This may take a couple of minutes on first startup.**
 
