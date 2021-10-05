@@ -3,17 +3,17 @@ version: '3.7'
 services:
 
   db:
+    container_name: ojs_db
     image: mariadb:latest
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ojs
-      MYSQL_PASSWORD: ${OJS_MYSQL_PASSWORD}
-      MYSQL_DATABASE: ojs
+      MYSQL_ROOT_PASSWORD: ${ROOT_DATABASE_PASSWORD}
+      MYSQL_USER: ${OJS_DATABASE_USERNAME}
+      MYSQL_PASSWORD: ${OJS_DATABASE_USERPASSWORD}
+      MYSQL_DATABASE: ${OJS_DATABASE_NAME}
     ports:
       - "4306:3306"
     volumes:
-      - mysqlvolume:/var/lib/mysql
-      - ./mariadb_data/:/docker-entrypoint-initdb.d/
+      - ./mariadb_data:/docker-entrypoint-initdb.d
     networks:
       - ojs_dev_network
 
@@ -21,20 +21,20 @@ services:
     container_name: ojs_dev
     build:
       context: .
-      args:
-        MYSQL_PASSWORD: ${OJS_MYSQL_PASSWORD}
     ports:
-      - "4445:80"
+      - "${PORT}:80"
     environment:
-      MYSQL_HOST: db
+      MYSQL_HOST: ojs_db
+      MYSQL_USER: ${OJS_DATABASE_USERNAME}
+      MYSQL_PASSWORD: ${OJS_DATABASE_USERPASSWORD}
+      MYSQL_DATABASE: ${OJS_DATABASE_NAME}
+      HOST: ${HOST}
+      PORT: ${PORT}
       XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
     volumes:
       - ./ojs:/var/www/html
     networks:
       - ojs_dev_network
-
-volumes:
-  mysqlvolume:
 
 networks:
   ojs_dev_network:

@@ -2,12 +2,12 @@ FROM php:7.3-apache
 
 LABEL maintainer="Deutsches Archäologisches Institut: dev@dainst.org"
 LABEL author="Dennis Twardy: kontakt@dennistwardy.com"
+LABEL author="Simon Hohl: simon.hohl@dainst.de"
 LABEL version="1.0"
 LABEL description="DAI specific OJS3 Docker container with DAI specific plugins"
 LABEL license="GNU GPL 3"
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV OJS_PORT="8000"
 
 RUN apt-get update && apt-get -y install \
     default-mysql-client \
@@ -47,14 +47,6 @@ RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
 # Use the default production configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# Add OJS installation scripts and change permissions
-COPY scripts/ojsInstall.exp /root/ojsInstall.exp
-RUN chmod +x /root/ojsInstall.exp
-
-### Prepare OJS installation ###
-RUN mkdir -p /var/www/ojsfiles
-WORKDIR /var/www/html
-
 # initial file rights
 WORKDIR /var
 RUN chgrp -f -R www-data www && \
@@ -63,13 +55,7 @@ RUN chgrp -f -R www-data www && \
 
 RUN a2enmod rewrite
 
-COPY conf/config.TEMPLATE.inc.php  /tmp/config.TEMPLATE.inc.php
-ARG MYSQL_PASSWORD
-RUN sed -i "s|password = ojs|password = $MYSQL_PASSWORD|g" /tmp/config.TEMPLATE.inc.php
-
-RUN mkdir -p /data/cache
 RUN mkdir -p /data/files
-RUN mkdir -p /data/cache
 
 RUN chown -R www-data:www-data /data
 
