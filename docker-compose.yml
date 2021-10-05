@@ -14,13 +14,15 @@ services:
     volumes:
       - mysqlvolume:/var/lib/mysql
       - ./mariadb_data/ojs3_dev.sql:/docker-entrypoint-initdb.d/ojs3_dev.sql
+    networks:
+      - ojs_dev_network
 
-  ojs3:
+  ojs:
+    container_name: ojs_dev
     build:
       context: .
       args:
         MYSQL_PASSWORD: ${OJS_MYSQL_PASSWORD}
-    image: dainst/ojs3
     ports:
       - "4445:80"
     environment:
@@ -28,6 +30,12 @@ services:
       XDEBUG_CONFIG: remote_host=host.docker.internal remote_port=9000 remote_enable=1
     volumes:
       - ./ojs:/var/www/html
+    networks:
+      - ojs_dev_network
 
 volumes:
   mysqlvolume:
+
+networks:
+  ojs_dev_network:
+    name: ojs_dev_network
