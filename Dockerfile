@@ -30,7 +30,6 @@ RUN docker-php-ext-install \
     json \
     mbstring \
     mysqli \
-    readline \
     xml \
     zip
 
