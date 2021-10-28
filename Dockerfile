@@ -45,7 +45,7 @@ RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer --1
 
 # Use the default production configuration
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY php.ini "$PHP_INI_DIR/php.ini"
 
 # initial file rights
 WORKDIR /var
