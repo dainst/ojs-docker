@@ -2,21 +2,7 @@
 
 ## Description
 
-This repository offers a fully dockerized version of [PKP's](https://pkp.sfu.ca/) OJS 3 in addition to a set of DAI specific plugins. The repository offers easy to use shell scripts to help with handling Docker. By default all data will be encapsuled in Docker Volumes and can therefore be used in multiple instances of the container.
-
-**This may take a couple of minutes on first startup.**
-
-After the first startup, any container using the prepared volumes will start within seconds.
-
-## Versions
-
-The image is based on the official **php:7.3-apache** image.
-
-The stack defined in the docker-compose file also adds a database container based on the latest version of the official mariadb image.
-
-## Configuration
-
-Configuration files can be found in the _conf folder_.
+This repository offers a fully dockerized version of [PKP's](https://pkp.sfu.ca/) OJS 3 in addition to a set of DAI specific plugins.
 
 ## Usage
 
@@ -26,17 +12,18 @@ Initialize submodules by running
 
     git submodule update --init --recursive
     
+
+### OJS SQL dump
+
+The repository provides the SQL dump of a minimal installation. To use the minimal setup see the [README](mariadb_data/README.md). Alternatively you can your own  SQL dump into [mariadb_data](mariadb_data) instead of using the [mariadb_data/init.sql_template](mariadb_data/init.sql_template).
     
 ### .env file
 Copy the .env-default template 
 
     cp .env-default .env
 
-and customize its contents.
+and customize its contents. If you use the default init.sql, you should be ready to go without any changes.
 
-### OJS SQL dump
-
-Make sure you put an OJS SQL dump into the appropriate [directory](mariadb_data) and that the [docker-compose.yml](docker-compose.yml) correctly mounts that file as a volume into the MariaDB image.
 
 ### Docker
 
