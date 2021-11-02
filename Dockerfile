@@ -44,8 +44,8 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
 RUN curl -sS https://getcomposer.org/installer -o composer-setup.php \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer --1
 
-# Use the default production configuration
 COPY php.ini "$PHP_INI_DIR/php.ini"
+COPY apache.conf /etc/apache2/sites-available/000-default.conf
 
 # initial file rights
 WORKDIR /var
