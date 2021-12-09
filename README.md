@@ -88,3 +88,19 @@ A small overlay with a play, stop and other buttons should open.
 ## License
 
 Licensed under GPL-3.0. For further information see LICENSE.
+
+
+## Troubleshooting
+
+### Error (Windows): standard_init_linux.go:211: exec user process caused "no such file or directory" 
+
+- change EOL conversion for docker-entrypoint.sh. and docker-entrypoint-install.sh => change from CRLF (Windows) to LF (Linux),
+cf. https://stackoverflow.com/questions/51508150/standard-init-linux-go190-exec-user-process-caused-no-such-file-or-directory
+
+### Error: Access denied for user 'root'@'172######' (using password: NO/YES)
+
+- add user to db-container via SQL, following:
+https://medium.com/tech-learn-share/docker-mysql-access-denied-for-user-172-17-0-1-using-password-yes-c5eadad582d3
+
+
+
